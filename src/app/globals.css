@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0c0b09;
+  --foreground: #f7f2e8;
+}
+
+@theme inline {
+  --font-sans: var(--font-figtree);
+  --font-serif: var(--font-instrument);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: #161410;
+  --color-paper: #f4ede1;
+  --color-paper-2: #ebe3d4;
+  --color-gold: #c4963a;
+  --color-gold-deep: #8f6a22;
+  --color-night: #0c0b09;
+  --color-night-2: #161410;
+  --color-ivory: #f7f2e8;
+  --color-muted: #6d675c;
+  --color-wa: #25d366;
+  --color-wa-deep: #128c3e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--color-night);
+  color: var(--color-ivory);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-night);
+}
+
+.grain {
+  position: relative;
+}
+
+.grain::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold) 20%,
+    var(--color-gold) 80%,
+    transparent
+  );
+}
+
+.spine {
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .spine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 1.5rem;
+    width: 1px;
+    background: color-mix(in srgb, var(--color-gold) 45%, transparent);
+  }
+}
+
+.wa-pulse {
+  animation: wa-pulse 2.4s ease-out infinite;
+}
+
+@keyframes wa-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-wa) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 14px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
