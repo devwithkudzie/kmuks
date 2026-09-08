@@ -23,8 +23,25 @@ const news = Newsreader({
   display: "swap",
 });
 
+const fallbackSiteUrl = "https://kudziemuks.com";
+
+function absoluteUrl(value: string) {
+  try {
+    if (!value.trim()) return fallbackSiteUrl;
+    return new URL(value).origin;
+  } catch {
+    try {
+      return new URL(`https://${value}`).origin;
+    } catch {
+      return fallbackSiteUrl;
+    }
+  }
+}
+
+const siteUrl = absoluteUrl(site.siteUrl);
+
 export const metadata: Metadata = {
-  metadataBase: new URL(site.siteUrl),
+  metadataBase: new URL(siteUrl),
   title: {
     default: `${site.handle} · digital authority for african founders`,
     template: `%s · ${site.handle}`,
@@ -42,7 +59,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: site.title,
     description: site.description,
-    url: site.siteUrl,
+    url: siteUrl,
     siteName: site.handle,
     locale: "en_ZA",
     type: "website",
@@ -60,7 +77,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   name: site.handle,
-  url: site.siteUrl,
+  url: siteUrl,
   description: site.description,
   areaServed: ["ZW", "ZA", "ZM", "KE", "NG"],
   sameAs: [site.linkedinUrl],
