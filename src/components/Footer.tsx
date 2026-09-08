@@ -1,4 +1,5 @@
-import { site, whatsappHref } from "@/lib/site";
+import { site } from "@/lib/site";
+import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 export function Footer() {
   return (
@@ -22,14 +23,12 @@ export function Footer() {
           >
             Audit
           </a>
-          <a
-            href={whatsappHref("footer")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition hover:text-fog"
+          <WhatsAppButton
+            source="footer"
+            className="bg-transparent p-0 text-inherit transition hover:text-fog"
           >
             WhatsApp
-          </a>
+          </WhatsAppButton>
         </div>
         <p className="text-xs text-mist/60">
           © {new Date().getFullYear()} kudziemuks

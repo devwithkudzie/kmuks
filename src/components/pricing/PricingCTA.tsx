@@ -1,7 +1,8 @@
 "use client";
 
 import { trackCta } from "@/lib/track";
-import { site, whatsappHref } from "@/lib/site";
+import { site } from "@/lib/site";
+import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 export function PricingCTA() {
   return (
@@ -28,15 +29,12 @@ export function PricingCTA() {
         >
           find my starting point
         </a>
-        <a
-          href={whatsappHref("pricing-final-cta")}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackCta("whatsapp")}
+        <WhatsAppButton
+          source="pricing-final-cta"
           className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/30 px-6 text-sm font-semibold text-white transition hover:border-white hover:bg-white hover:text-canvas"
         >
           talk to kudziemuks
-        </a>
+        </WhatsAppButton>
       </div>
     </div>
   );

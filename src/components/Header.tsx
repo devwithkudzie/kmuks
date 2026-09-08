@@ -2,7 +2,8 @@
 
 import { useEffect, useId, useRef, useState, type MouseEvent, type RefObject } from "react";
 import { ArrowRight } from "lucide-react";
-import { site, whatsappHref } from "@/lib/site";
+import { site } from "@/lib/site";
+import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 const links = [
   { href: "#methodology", label: "How it works" },
@@ -96,14 +97,14 @@ function MobileMenu({
         </ul>
 
         <div className="mt-auto pt-10">
-          <a
-            href="#audit"
-            onClick={(event) => onGoTo("#audit", event)}
+          <WhatsAppButton
+            source="work-with-me"
+            onOpen={onClose}
             className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
           >
             Work with me
             <ArrowRight className="size-4" />
-          </a>
+          </WhatsAppButton>
           <div className="mt-8 flex gap-6 text-sm text-mist">
             <a
               href={site.linkedinUrl}
@@ -113,14 +114,13 @@ function MobileMenu({
             >
               LinkedIn
             </a>
-            <a
-              href={whatsappHref("menu")}
-              target="_blank"
-              rel="noopener noreferrer"
+            <WhatsAppButton
+              source="menu"
+              onOpen={onClose}
               className={`transition hover:text-fog ${focus}`}
             >
               WhatsApp
-            </a>
+            </WhatsAppButton>
           </div>
         </div>
       </div>
@@ -309,12 +309,12 @@ export function Header() {
           </button>
 
           {heroInView ? null : (
-            <a
-              href="#audit"
+            <WhatsAppButton
+              source="work-with-me"
               className={`hidden min-h-9 items-center rounded-lg bg-purple px-3 text-[0.65rem] font-medium uppercase tracking-[0.12em] text-white transition hover:bg-violet md:inline-flex sm:min-h-10 sm:px-4 sm:text-xs ${focus}`}
             >
               Work with me
-            </a>
+            </WhatsAppButton>
           )}
         </div>
       </nav>

@@ -1,7 +1,8 @@
 "use client";
 
 import { trackCta } from "@/lib/track";
-import { site, whatsappHref } from "@/lib/site";
+import { site } from "@/lib/site";
+import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 export function CtaPair({
   source = "hero",
@@ -14,15 +15,12 @@ export function CtaPair({
 
   return (
     <div className={`flex w-full flex-col gap-3 sm:flex-row ${wrap}`}>
-      <a
-        href={whatsappHref(source)}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => trackCta("whatsapp")}
+      <WhatsAppButton
+        source={source}
         className="inline-flex min-h-12 items-center justify-center rounded-lg bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet"
       >
         chat on whatsapp
-      </a>
+      </WhatsAppButton>
       <a
         href={site.calendlyUrl}
         target="_blank"

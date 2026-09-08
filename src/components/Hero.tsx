@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import heroImage from "../../public/hero.jpg";
 import { HeroChannels } from "@/components/hero/HeroChannels";
+import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple";
@@ -70,13 +71,13 @@ export function Hero() {
               className="animate-fade-up flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
               style={{ animationDelay: "0.42s" }}
             >
-              <a
-                href="#audit"
+              <WhatsAppButton
+                source="work-with-me"
                 className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
               >
                 Work with me
                 <ArrowRight aria-hidden className="size-4" strokeWidth={1.75} />
-              </a>
+              </WhatsAppButton>
             </div>
           </div>
         </div>

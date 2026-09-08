@@ -1,7 +1,6 @@
 "use client";
 
-import { trackCta } from "@/lib/track";
-import { whatsappHref } from "@/lib/site";
+import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple";
@@ -71,7 +70,7 @@ const packages = [
     bestWhen:
       "You need someone to manage the whole system rather than simply help you create posts.",
     cta: "Discuss Pan-African Authority",
-    href: whatsappHref("pan-african"),
+    href: "#audit",
     external: true,
     featured: true,
   },
@@ -145,23 +144,29 @@ export function Packages() {
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-mist">
                   {item.bestWhen}
                 </p>
-                <a
-                  href={item.href}
-                  {...(item.external
-                    ? {
-                        target: "_blank",
-                        rel: "noopener noreferrer",
-                        onClick: () => trackCta("whatsapp"),
-                      }
-                    : {})}
-                  className={`mt-6 inline-flex min-h-12 items-center justify-center rounded-lg px-5 text-sm font-medium tracking-[0.12em] uppercase transition ${
-                    item.featured
-                      ? "bg-purple text-white hover:bg-violet"
-                      : "border border-white/20 text-fog hover:border-purple hover:text-white"
-                  } ${focus}`}
-                >
-                  {item.cta}
-                </a>
+                {item.external ? (
+                  <WhatsAppButton
+                    source={item.id}
+                    className={`mt-6 inline-flex min-h-12 items-center justify-center rounded-lg px-5 text-sm font-medium tracking-[0.12em] uppercase transition ${
+                      item.featured
+                        ? "bg-purple text-white hover:bg-violet"
+                        : "border border-white/20 text-fog hover:border-purple hover:text-white"
+                    } ${focus}`}
+                  >
+                    {item.cta}
+                  </WhatsAppButton>
+                ) : (
+                  <a
+                    href={item.href}
+                    className={`mt-6 inline-flex min-h-12 items-center justify-center rounded-lg px-5 text-sm font-medium tracking-[0.12em] uppercase transition ${
+                      item.featured
+                        ? "bg-purple text-white hover:bg-violet"
+                        : "border border-white/20 text-fog hover:border-purple hover:text-white"
+                    } ${focus}`}
+                  >
+                    {item.cta}
+                  </a>
+                )}
               </div>
             </details>
           ))}
@@ -181,18 +186,15 @@ export function Packages() {
             execution support for client work, we can shape the engagement
             around your team.
           </p>
-          <a
-            href={whatsappHref("team")}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackCta("whatsapp")}
+          <WhatsAppButton
+            source="team"
             className={`mt-8 inline-flex min-h-12 items-center text-sm font-medium tracking-[0.14em] text-purple uppercase transition hover:text-fog ${focus}`}
           >
             Talk about your team
             <span aria-hidden className="ml-2">
               →
             </span>
-          </a>
+          </WhatsAppButton>
         </div>
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { whatsappHref } from "@/lib/site";
+import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 export function Close() {
   return (
@@ -8,18 +8,16 @@ export function Close() {
           Ready to get known for what you do best?
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-sm leading-relaxed text-zinc-300 sm:text-base">
-          Don't let your digital presence drop the ball while your ground
-          execution is flawless. Let's build your multi-channel acquisition
+          Don&rsquo;t let your digital presence drop the ball while your ground
+          execution is flawless. Let&rsquo;s build your multi-channel acquisition
           pipeline this week.
         </p>
-        <a
-          href={whatsappHref("profile-audit")}
-          target="_blank"
-          rel="noopener noreferrer"
+        <WhatsAppButton
+          source="profile-audit"
           className="mt-10 inline-flex min-h-12 items-center rounded-lg bg-purple px-7 text-sm font-medium text-white transition hover:bg-violet"
         >
           Get your profile audit today
-        </a>
+        </WhatsAppButton>
       </div>
     </section>
   );
