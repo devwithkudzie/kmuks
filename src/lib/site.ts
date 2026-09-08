@@ -1,13 +1,9 @@
 export const site = {
-  name: "Kudzaishe Mukungurutse",
-  shortName: "Kudzaishe",
+  name: "kudziemuks",
   handle: "kudziemuks",
-  role: "B2B Personal Brand Strategist & Software Engineer",
-  title: "Expertise Alone Isn’t Enough. Stop Relying on Word-of-Mouth.",
+  title: "expertise alone isn’t enough. stop relying on word-of-mouth.",
   description:
-    "I help independent consultants, developers, and skilled professionals turn raw expertise into a predictable client-acquisition engine.",
-  location: "Harare · Southern & Pan-African B2B",
-  markets: ["Zimbabwe", "South Africa", "Zambia", "Kenya", "Nigeria"],
+    "we build lightweight, mobile-optimized content engines and landing pages that turn local expertise into consistent client inquiries.",
   linkedinUrl: "https://www.linkedin.com/in/kmuks",
   linkedinPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID ?? "",
   calendlyUrl:
@@ -17,12 +13,12 @@ export const site = {
     /\D/g,
     "",
   ),
-  whatsappMessage:
-    "Hi Kudzaishe — I want to turn my expertise into a client-acquisition engine. Can we talk?",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://kudziemuks.com",
 } as const;
 
-export function whatsappHref() {
-  const text = encodeURIComponent(site.whatsappMessage);
+export function whatsappHref(source = "landing-page") {
+  const text = encodeURIComponent(
+    `hi kudziemuks — lead from ${source} on kudziemuks.com. i want a profile audit.`,
+  );
   return `https://wa.me/${site.whatsappNumber}?text=${text}`;
 }

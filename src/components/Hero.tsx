@@ -1,51 +1,85 @@
-import { CtaPair } from "@/components/CtaPair";
-import { site } from "@/lib/site";
+import Image from "next/image";
+import { ArrowRight } from "lucide-react";
+import heroImage from "../../public/hero.jpg";
+import { HeroChannels } from "@/components/hero/HeroChannels";
+
+const focus =
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple";
 
 export function Hero() {
   return (
-    <section
-      id="hero"
-      className="grain relative overflow-hidden bg-night text-ivory"
-    >
+    <section id="home" className="relative overflow-hidden bg-canvas text-fog">
+      <Image
+        src={heroImage}
+        alt="Night view of a modern office building"
+        fill
+        preload
+        placeholder="blur"
+        sizes="100vw"
+        quality={75}
+        className="object-cover object-center"
+      />
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-24 right-[-8%] font-serif text-[42vw] leading-none text-gold/[0.06] select-none sm:text-[28vw]"
-      >
-        KM
-      </div>
-      <div className="relative mx-auto flex min-h-[calc(100svh-4.5rem)] max-w-6xl flex-col justify-center px-5 py-16 sm:px-8 sm:py-20 lg:px-12">
-        <p className="text-[11px] font-medium tracking-[0.28em] text-gold uppercase sm:text-xs">
-          {site.location}
-        </p>
-        <h1 className="mt-6 max-w-4xl font-serif text-[2.15rem] leading-[1.12] tracking-tight text-ivory sm:text-5xl lg:text-[4.15rem]">
-          Expertise alone isn’t enough.
-          <span className="mt-3 block text-gold">
-            It’s time to stop relying on word-of-mouth.
-          </span>
-        </h1>
-        <div className="mt-8 max-w-xl">
-          <div className="hairline mb-8 max-w-40" />
-          <p className="text-lg leading-relaxed text-ivory/80 sm:text-xl">
-            I help independent consultants, developers, and skilled professionals
-            turn their raw expertise into a{" "}
-            <strong className="font-semibold text-ivory">
-              predictable client-acquisition engine
-            </strong>
-            .
+        aria-hidden
+        className="absolute inset-0 bg-[linear-gradient(to_bottom,rgb(15_15_17/0.8),rgb(15_15_17/0.93)_0%,rgb(15_15_17/0.98))]"
+      />
+
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col px-5 sm:px-8 lg:min-h-[calc(100svh-8.25rem)]">
+        <div className="flex flex-1 flex-col items-center justify-center py-20 text-center lg:py-16">
+          <p className="animate-fade-up text-[0.7rem] font-medium tracking-[0.22em] text-mist uppercase">
+            Authority, built with intent
           </p>
-        </div>
-        <div className="mt-10 max-w-2xl">
-          <CtaPair />
-          <p className="mt-4 text-sm text-ivory/50">
-            20 minutes. Direct conversation. No archive of your past — only
-            clarity on the problem you solve right now.
+
+          <h1
+            className="animate-fade-up mx-auto mt-6 max-w-4xl text-[clamp(2.85rem,8vw,5rem)] font-bold leading-[1.02] tracking-[-0.04em] text-fog"
+            style={{ animationDelay: "0.12s" }}
+          >
+            GET KNOWN FOR{" "}
+            <br className="hidden sm:block" />
+            <span className="relative inline-block pb-[0.06em]">
+              WHAT YOU DO BEST.
+              <span
+                aria-hidden
+                className="hero-accent-line absolute inset-x-0 bottom-0 h-px bg-purple"
+              />
+            </span>
+          </h1>
+
+          <p
+            className="animate-fade-up mx-auto mt-8 max-w-2xl text-base leading-relaxed text-mist sm:text-lg lg:max-w-3xl"
+            style={{ animationDelay: "0.24s" }}
+          >
+            I help founders, executives, consultants and service business
+            owners
+            <br className="hidden lg:block" />
+            find the right message, create content around it and show up
+            consistently
+            <br className="hidden lg:block" />
+            where the people they want to reach already spend their time.
           </p>
+
+          <div className="mt-10 flex w-full flex-col items-center gap-8">
+            <div
+              className="animate-fade-up w-full"
+              style={{ animationDelay: "0.52s" }}
+            >
+              <HeroChannels />
+            </div>
+
+            <div
+              className="animate-fade-up flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
+              style={{ animationDelay: "0.42s" }}
+            >
+              <a
+                href="#audit"
+                className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
+              >
+                Work with me
+                <ArrowRight aria-hidden className="size-4" strokeWidth={1.75} />
+              </a>
+            </div>
+          </div>
         </div>
-        <ul className="mt-14 flex flex-wrap gap-x-6 gap-y-2 border-t border-ivory/10 pt-6 text-[11px] tracking-[0.16em] text-ivory/45 uppercase sm:text-xs">
-          <li>Computer Systems Engineer</li>
-          <li>Impact Entrepreneurship MBA</li>
-          <li>Personal Brand Strategy</li>
-        </ul>
       </div>
     </section>
   );

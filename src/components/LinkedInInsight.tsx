@@ -22,6 +22,8 @@ export function LinkedInInsight() {
         strategy="lazyOnload"
       />
       <noscript>
+        {/* LinkedIn insight noscript pixel — must remain a raw 1x1 gif, not next/image */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           height={1}
           width={1}

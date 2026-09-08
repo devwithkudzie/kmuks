@@ -1,7 +1,5 @@
 "use client";
 
-import { trackCta } from "@/components/CtaPair";
-
 declare global {
   interface Window {
     lintrk?: (action: string, payload?: { conversion_id?: number }) => void;
