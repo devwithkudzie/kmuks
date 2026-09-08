@@ -1,3 +1,28 @@
+function resolveSiteUrl() {
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+    process.env.VERCEL_URL,
+    "https://kudziemuks.com",
+  ];
+
+  for (const value of candidates) {
+    const trimmed = value?.trim();
+    if (!trimmed) continue;
+    try {
+      return new URL(trimmed).origin;
+    } catch {
+      try {
+        return new URL(`https://${trimmed}`).origin;
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  return "https://kudziemuks.com";
+}
+
 export const site = {
   name: "kudziemuks",
   handle: "kudziemuks",
@@ -13,7 +38,7 @@ export const site = {
     /\D/g,
     "",
   ),
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://kudziemuks.com",
+  siteUrl: resolveSiteUrl(),
 } as const;
 
 export function whatsappHref(source = "landing-page") {
