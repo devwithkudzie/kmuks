@@ -18,7 +18,7 @@ export function Close() {
           rel="noopener noreferrer"
           className="mt-10 inline-flex min-h-12 items-center rounded-lg bg-purple px-7 text-sm font-medium text-white transition hover:bg-violet"
         >
-          secure your profile audit today
+          Get your profile audit today
         </a>
       </div>
     </section>
