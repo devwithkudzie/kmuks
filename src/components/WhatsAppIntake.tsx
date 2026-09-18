@@ -23,12 +23,12 @@ type IntakeContextValue = {
 const IntakeContext = createContext<IntakeContextValue | null>(null);
 
 const onlinePlatforms = [
-  { id: "Website", placeholder: "yourbusiness.com" },
-  { id: "Facebook", placeholder: "facebook.com/..." },
-  { id: "Instagram", placeholder: "instagram.com/..." },
-  { id: "LinkedIn", placeholder: "linkedin.com/..." },
-  { id: "TikTok", placeholder: "tiktok.com/@..." },
-  { id: "X", placeholder: "x.com/..." },
+  { id: "Website", prefix: "", placeholder: "yourbusiness.com" },
+  { id: "Facebook", prefix: "facebook.com/", placeholder: "yourbusiness" },
+  { id: "Instagram", prefix: "instagram.com/", placeholder: "yourbusiness" },
+  { id: "LinkedIn", prefix: "linkedin.com/", placeholder: "company/yourbusiness" },
+  { id: "TikTok", prefix: "tiktok.com/@", placeholder: "yourbusiness" },
+  { id: "X", prefix: "x.com/", placeholder: "yourbusiness" },
 ] as const;
 
 const field =
@@ -160,12 +160,18 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
     event.preventDefault();
 
     trackCta("whatsapp");
+    const fullOnlineProfiles = onlineProfiles
+      .filter((profile) => profile.url.trim())
+      .map((profile) => ({
+        platform: profile.platform,
+        url: `${onlinePlatforms.find((p) => p.id === profile.platform)?.prefix ?? ""}${profile.url.trim()}`,
+      }));
     window.open(
       whatsappHref(source, {
         name: name.trim(),
         businessName: businessName.trim(),
         businessDescription: businessDescription.trim(),
-        onlineProfiles,
+        onlineProfiles: fullOnlineProfiles,
       }),
       "_blank",
       "noopener,noreferrer",
@@ -313,28 +319,39 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
 
                 {onlineProfiles.length > 0 ? (
                   <div className="mt-4 space-y-3">
-                    {onlineProfiles.map((profile) => (
-                      <div key={profile.platform} className="flex items-center gap-3">
-                        <label
-                          htmlFor={`online-${profile.platform}`}
-                          className="w-20 shrink-0 text-[0.7rem] tracking-[0.16em] text-mist uppercase"
-                        >
-                          {profile.platform}
-                        </label>
-                        <input
-                          id={`online-${profile.platform}`}
-                          value={profile.url}
-                          onChange={(event) =>
-                            updateProfileUrl(profile.platform, event.target.value)
-                          }
-                          placeholder={
-                            onlinePlatforms.find((p) => p.id === profile.platform)
-                              ?.placeholder
-                          }
-                          className={`${field} mt-0 flex-1`}
-                        />
-                      </div>
-                    ))}
+                    {onlineProfiles.map((profile) => {
+                      const platformInfo = onlinePlatforms.find(
+                        (p) => p.id === profile.platform,
+                      );
+                      return (
+                        <div key={profile.platform} className="flex items-center gap-3">
+                          <label
+                            htmlFor={`online-${profile.platform}`}
+                            className="w-20 shrink-0 text-[0.7rem] tracking-[0.16em] text-mist uppercase"
+                          >
+                            {profile.platform}
+                          </label>
+                          <div className="flex flex-1 items-center rounded-md border border-white/5 bg-night transition focus-within:bg-white/10 focus-within:ring-2 focus-within:ring-purple">
+                            {platformInfo?.prefix ? (
+                              <span className="pl-4 text-sm text-mist/70 select-none">
+                                {platformInfo.prefix}
+                              </span>
+                            ) : null}
+                            <input
+                              id={`online-${profile.platform}`}
+                              value={profile.url}
+                              onChange={(event) =>
+                                updateProfileUrl(profile.platform, event.target.value)
+                              }
+                              placeholder={platformInfo?.placeholder}
+                              className={`min-w-0 flex-1 bg-transparent py-3 pr-4 text-sm text-fog outline-none placeholder:text-mist/50 ${
+                                platformInfo?.prefix ? "pl-1" : "pl-4"
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : null}
 

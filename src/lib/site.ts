@@ -62,18 +62,19 @@ export function whatsappHref(source = "landing-page", answers?: WhatsAppAnswers)
 
   const onlineLines = answers.onlineProfiles
     .filter((profile) => profile.url.trim())
-    .map((profile) => `${profile.platform}: ${profile.url.trim()}`);
+    .map((profile) => `• ${profile.platform}: ${profile.url.trim()}`);
 
   const text = [
-    "Hi Kudziemuks — I want a Free Customer Growth Review.",
+    "*New Customer Growth Review Request*",
     "",
-    `1. Name: ${answers.name}`,
-    `2. Business: ${answers.businessName}`,
-    `3. What we do: ${answers.businessDescription}`,
-    `4. Online presence: ${onlineLines.length ? "" : "Not specified"}`,
-    ...onlineLines.map((line) => `   - ${line}`),
+    `*Name:* ${answers.name}`,
+    `*Business:* ${answers.businessName}`,
+    `*What they do:* ${answers.businessDescription}`,
     "",
-    `(from ${source} on kudziemuks.com)`,
+    "*Online presence:*",
+    ...(onlineLines.length ? onlineLines : ["Not specified"]),
+    "",
+    `_Submitted from ${source} on kudziemuks.com_`,
   ].join("\n");
 
   return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(text)}`;
