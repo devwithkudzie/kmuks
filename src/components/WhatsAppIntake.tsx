@@ -12,8 +12,9 @@ import {
   type FormEvent,
   type ReactNode,
 } from "react";
+import { X } from "lucide-react";
 import { trackCta } from "@/lib/track";
-import { whatsappHref } from "@/lib/site";
+import { whatsappHref, type SocialProfile } from "@/lib/site";
 
 type IntakeContextValue = {
   open: (source: string) => void;
@@ -21,16 +22,17 @@ type IntakeContextValue = {
 
 const IntakeContext = createContext<IntakeContextValue | null>(null);
 
-const packageChoices = [
-  { id: "thought-leader", label: "Thought Leader" },
-  { id: "growth-engine", label: "Growth Engine" },
-  { id: "pan-african", label: "Pan-African Authority" },
+const onlinePlatforms = [
+  { id: "Website", placeholder: "yourbusiness.com" },
+  { id: "Facebook", placeholder: "facebook.com/..." },
+  { id: "Instagram", placeholder: "instagram.com/..." },
+  { id: "LinkedIn", placeholder: "linkedin.com/..." },
+  { id: "TikTok", placeholder: "tiktok.com/@..." },
+  { id: "X", placeholder: "x.com/..." },
 ] as const;
 
-const packageIds: Set<string> = new Set(packageChoices.map((item) => item.id));
-
 const field =
-  "mt-2 w-full rounded-lg border border-white/10 bg-night px-4 py-3 text-sm text-fog outline-none transition placeholder:text-mist/50 focus:border-purple";
+  "mt-2 w-full rounded-md border border-white/5 bg-night px-4 py-3 text-sm text-fog outline-none transition placeholder:text-mist/50 focus:bg-white/10 focus:ring-2 focus:ring-purple";
 
 const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple";
@@ -77,28 +79,28 @@ export function WhatsAppButton({
 export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [source, setSource] = useState("work-with-me");
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
   const [name, setName] = useState("");
-  const [role, setRole] = useState("");
-  const [interest, setInterest] = useState("");
-  const [other, setOther] = useState("");
-  const [interestError, setInterestError] = useState(false);
+  const [businessName, setBusinessName] = useState("");
+
+  const [businessDescription, setBusinessDescription] = useState("");
+  const [onlineProfiles, setOnlineProfiles] = useState<SocialProfile[]>([]);
+
   const titleId = useId();
   const firstFieldRef = useRef<HTMLInputElement>(null);
-  const otherSelected = interest === "other";
 
   const resetForm = () => {
+    setStep(1);
     setName("");
-    setRole("");
-    setInterest("");
-    setOther("");
-    setInterestError(false);
+    setBusinessName("");
+    setBusinessDescription("");
+    setOnlineProfiles([]);
   };
 
   const openIntake = useCallback((nextSource: string) => {
     setSource(nextSource);
-    setInterest(packageIds.has(nextSource) ? nextSource : "");
-    setOther("");
-    setInterestError(false);
+    resetForm();
     setOpen(true);
   }, []);
 
@@ -107,10 +109,20 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
     resetForm();
   }, []);
 
-  const selectInterest = (id: string) => {
-    setInterestError(false);
-    setInterest(id);
-    if (id !== "other") setOther("");
+  const togglePlatform = (platformId: string) => {
+    setOnlineProfiles((prev) =>
+      prev.some((profile) => profile.platform === platformId)
+        ? prev.filter((profile) => profile.platform !== platformId)
+        : [...prev, { platform: platformId, url: "" }],
+    );
+  };
+
+  const updateProfileUrl = (platformId: string, url: string) => {
+    setOnlineProfiles((prev) =>
+      prev.map((profile) =>
+        profile.platform === platformId ? { ...profile, url } : profile,
+      ),
+    );
   };
 
   useEffect(() => {
@@ -132,26 +144,28 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
     };
   }, [open, closeIntake]);
 
+  const onContinueStep1 = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!name.trim() || !businessName.trim()) return;
+    setStep(2);
+  };
+
+  const onContinueStep2 = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!businessDescription.trim()) return;
+    setStep(3);
+  };
+
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!interest) {
-      setInterestError(true);
-      return;
-    }
-    if (otherSelected && !other.trim()) return;
-
-    const label =
-      interest === "other"
-        ? "Other"
-        : (packageChoices.find((item) => item.id === interest)?.label ?? interest);
 
     trackCta("whatsapp");
     window.open(
       whatsappHref(source, {
         name: name.trim(),
-        role: role.trim(),
-        interests: [label],
-        other: otherSelected ? other.trim() : undefined,
+        businessName: businessName.trim(),
+        businessDescription: businessDescription.trim(),
+        onlineProfiles,
       }),
       "_blank",
       "noopener,noreferrer",
@@ -163,129 +177,177 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
     <IntakeContext.Provider value={{ open: openIntake }}>
       {children}
       {open ? (
-        <div className="fixed inset-0 z-[80] flex items-end justify-center p-4 sm:items-center">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          className="fixed inset-0 z-80 overflow-y-auto bg-canvas text-fog"
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_at_top,rgb(109_40_217/0.18),transparent_55%)]"
+          />
+
           <button
             type="button"
             aria-label="Close"
-            className="absolute inset-0 bg-canvas/70 backdrop-blur-sm"
             onClick={closeIntake}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            className="relative max-h-[min(40rem,90svh)] w-full max-w-md overflow-y-auto rounded-2xl border border-white/10 bg-canvas text-fog shadow-[0_24px_80px_rgb(0_0_0/0.55)]"
+            className="fixed top-5 right-5 z-10 inline-flex size-10 items-center justify-center text-mist transition hover:bg-white/10 hover:text-fog"
           >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(109_40_217/0.18),transparent_55%)]"
-            />
-            <form className="relative px-5 py-6 sm:px-6 sm:py-7" onSubmit={onSubmit}>
-              <h2
-                id={titleId}
-                className="text-2xl font-bold tracking-tight"
-              >
-                Let’s start with what you need.
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-mist">
-                Tell me a little about what you&rsquo;re working on and what
-                you&rsquo;d like help with.
-              </p>
+            <X className="size-6" aria-hidden />
+          </button>
 
-              <label className="mt-6 block text-[0.7rem] tracking-[0.16em] text-mist uppercase">
-                Name
-                <input
-                  ref={firstFieldRef}
-                  required
-                  name="name"
-                  autoComplete="name"
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  className={field}
-                />
-              </label>
+          <div className="relative mx-auto flex min-h-full w-full max-w-md flex-col justify-center px-6 py-24 sm:px-0">
+            {step === 1 ? (
+              <form onSubmit={onContinueStep1}>
+                <p className="text-[0.7rem] font-medium tracking-[0.16em] text-purple uppercase">
+                  Step 1 of 3
+                </p>
+                <h2 id={titleId} className="mt-2 text-2xl font-bold tracking-tight">
+                  About you
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-mist">
+                  Let&rsquo;s start with the basics.
+                </p>
 
-              <label className="mt-4 block text-[0.7rem] tracking-[0.16em] text-mist uppercase">
-                What I do
-                <input
-                  required
-                  name="role"
-                  value={role}
-                  onChange={(event) => setRole(event.target.value)}
-                  placeholder="Founder, consultant, agency…"
-                  className={field}
-                />
-              </label>
+                <label className="mt-6 block text-[0.7rem] tracking-[0.16em] text-mist uppercase">
+                  Name
+                  <input
+                    ref={firstFieldRef}
+                    required
+                    name="name"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder="Your name"
+                    className={field}
+                  />
+                </label>
 
-              <fieldset className="mt-5">
-                <legend className="text-[0.7rem] tracking-[0.16em] text-mist uppercase">
-                  Packages I’m interested in
-                </legend>
-                <ul className="mt-3 space-y-2">
-                  {packageChoices.map((item) => (
-                    <li key={item.id}>
-                      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-night/60 px-3 py-3 text-sm text-fog">
+                <label className="mt-4 block text-[0.7rem] tracking-[0.16em] text-mist uppercase">
+                  Business name
+                  <input
+                    required
+                    name="businessName"
+                    value={businessName}
+                    onChange={(event) => setBusinessName(event.target.value)}
+                    placeholder="Your business name"
+                    className={field}
+                  />
+                </label>
+
+                <div className="mt-6">
+                  <button
+                    type="submit"
+                    className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
+                  >
+                    Continue →
+                  </button>
+                </div>
+              </form>
+            ) : step === 2 ? (
+              <form onSubmit={onContinueStep2}>
+                <p className="text-[0.7rem] font-medium tracking-[0.16em] text-purple uppercase">
+                  Step 2 of 3
+                </p>
+                <h2 id={titleId} className="mt-2 text-2xl font-bold tracking-tight">
+                  About your business
+                </h2>
+
+                <label className="mt-6 block text-[0.7rem] tracking-[0.16em] text-mist uppercase">
+                  What does your business do?
+                  <textarea
+                    required
+                    name="businessDescription"
+                    rows={6}
+                    value={businessDescription}
+                    onChange={(event) => setBusinessDescription(event.target.value)}
+                    placeholder="Tell me briefly what you sell or offer"
+                    className={`${field} resize-y`}
+                  />
+                </label>
+
+                <div className="mt-6">
+                  <button
+                    type="submit"
+                    className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
+                  >
+                    Continue →
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={onSubmit}>
+                <p className="text-[0.7rem] font-medium tracking-[0.16em] text-purple uppercase">
+                  Step 3 of 3
+                </p>
+                <h2 id={titleId} className="mt-2 text-2xl font-bold tracking-tight">
+                  Where can I find your business online?
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-mist">
+                  All optional — tap any that apply.
+                </p>
+
+                <div className="mt-6 grid grid-cols-2 gap-2">
+                  {onlinePlatforms.map((platform) => {
+                    const active = onlineProfiles.some(
+                      (profile) => profile.platform === platform.id,
+                    );
+                    return (
+                      <button
+                        key={platform.id}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => togglePlatform(platform.id)}
+                        className={`rounded-lg px-4 py-2 text-sm transition ${
+                          active
+                            ? "bg-purple text-white"
+                            : "bg-night text-mist hover:bg-white/10 hover:text-fog"
+                        }`}
+                      >
+                        {platform.id}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {onlineProfiles.length > 0 ? (
+                  <div className="mt-4 space-y-3">
+                    {onlineProfiles.map((profile) => (
+                      <div key={profile.platform} className="flex items-center gap-3">
+                        <label
+                          htmlFor={`online-${profile.platform}`}
+                          className="w-20 shrink-0 text-[0.7rem] tracking-[0.16em] text-mist uppercase"
+                        >
+                          {profile.platform}
+                        </label>
                         <input
-                          type="radio"
-                          name="interest"
-                          checked={interest === item.id}
-                          onChange={() => selectInterest(item.id)}
-                          className="size-4 accent-purple"
+                          id={`online-${profile.platform}`}
+                          value={profile.url}
+                          onChange={(event) =>
+                            updateProfileUrl(profile.platform, event.target.value)
+                          }
+                          placeholder={
+                            onlinePlatforms.find((p) => p.id === profile.platform)
+                              ?.placeholder
+                          }
+                          className={`${field} mt-0 flex-1`}
                         />
-                        {item.label}
-                      </label>
-                    </li>
-                  ))}
-                  <li>
-                    <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-white/10 bg-night/60 px-3 py-3 text-sm text-fog">
-                      <input
-                        type="radio"
-                        name="interest"
-                        checked={otherSelected}
-                        onChange={() => selectInterest("other")}
-                        className="size-4 accent-purple"
-                      />
-                      Other
-                    </label>
-                  </li>
-                </ul>
-                {interestError ? (
-                  <p className="mt-2 text-sm text-purple">
-                    Select a package, or Other.
-                  </p>
+                      </div>
+                    ))}
+                  </div>
                 ) : null}
-                {otherSelected ? (
-                  <label className="mt-3 block text-[0.7rem] tracking-[0.16em] text-mist uppercase">
-                    Tell me what you’re interested in
-                    <textarea
-                      required
-                      name="other"
-                      rows={3}
-                      value={other}
-                      onChange={(event) => setOther(event.target.value)}
-                      placeholder="What you need help with…"
-                      className={`${field} resize-none`}
-                    />
-                  </label>
-                ) : null}
-              </fieldset>
 
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <button
-                  type="submit"
-                  className={`inline-flex min-h-12 flex-1 items-center justify-center rounded-lg bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
-                >
-                  Submit
-                </button>
-                <button
-                  type="button"
-                  onClick={closeIntake}
-                  className={`inline-flex min-h-12 items-center justify-center px-3 text-sm text-mist transition hover:text-fog ${focus}`}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+                <div className="mt-6">
+                  <button
+                    type="submit"
+                    className={`inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
+                  >
+                    Get My Free Customer Growth Review
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       ) : null}

@@ -41,33 +41,40 @@ export const site = {
   siteUrl: resolveSiteUrl(),
 } as const;
 
+export type SocialProfile = {
+  platform: string;
+  url: string;
+};
+
 export type WhatsAppAnswers = {
   name: string;
-  role: string;
-  interests: string[];
-  other?: string;
+  businessName: string;
+  businessDescription: string;
+  onlineProfiles: SocialProfile[];
 };
 
 export function whatsappHref(source = "landing-page", answers?: WhatsAppAnswers) {
-  const interestLine = answers?.interests.length
-    ? answers.interests.join(", ")
-    : "Not specified";
-  const otherLine = answers?.other?.trim()
-    ? `Other details: ${answers.other.trim()}`
-    : null;
+  if (!answers) {
+    return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(
+      `Hi Kudziemuks — lead from ${source} on kudziemuks.com. I want a Free Customer Growth Review.`,
+    )}`;
+  }
 
-  const text = answers
-    ? [
-        "Hi Kudziemuks — I want to work together.",
-        "",
-        `1. Name: ${answers.name}`,
-        `2. What I do: ${answers.role}`,
-        `3. Interested in: ${interestLine}`,
-        ...(otherLine ? [otherLine] : []),
-        "",
-        `(from ${source} on kudziemuks.com)`,
-      ].join("\n")
-    : `Hi Kudziemuks — lead from ${source} on kudziemuks.com. I want a profile audit.`;
+  const onlineLines = answers.onlineProfiles
+    .filter((profile) => profile.url.trim())
+    .map((profile) => `${profile.platform}: ${profile.url.trim()}`);
+
+  const text = [
+    "Hi Kudziemuks — I want a Free Customer Growth Review.",
+    "",
+    `1. Name: ${answers.name}`,
+    `2. Business: ${answers.businessName}`,
+    `3. What we do: ${answers.businessDescription}`,
+    `4. Online presence: ${onlineLines.length ? "" : "Not specified"}`,
+    ...onlineLines.map((line) => `   - ${line}`),
+    "",
+    `(from ${source} on kudziemuks.com)`,
+  ].join("\n");
 
   return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(text)}`;
 }

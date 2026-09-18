@@ -1,24 +1,41 @@
 import Image from "next/image";
-import audiencePhoto from "../../public/how-audience.jpg";
+import audiencePhoto from "../../public/how-create.jpg";
 
 const steps = [
   {
     number: "01",
-    title: "Research & Audit",
-    headline: "First, I understand where you are.",
-    body: "I look at your goals, audience, industry, competitors and current online presence to understand what's working, what's missing and where the opportunity may be.",
+    title: "Understand",
+    headline: "First, I understand your business.",
+    body: "We look at what you sell, who normally buys from you, how you're currently getting customers, and where there may be opportunities to get more.",
+    tags: "Your Business · Your Customers · What's Working",
   },
   {
     number: "02",
-    title: "Recommendation",
-    headline: "You need to be in the right places.",
-    body: "Based on what we learn, I recommend what you should talk about, who you need to reach and which channels make the most sense for you.",
+    title: "Plan",
+    headline: "Then we figure out the best way to reach them.",
+    body: "I work out what to say, what to offer, and where we are most likely to reach the people you want as customers.",
+    tags: "Message · Offer · Where to Reach Them",
   },
   {
     number: "03",
-    title: "Execution",
-    headline: "Then, I help you show up consistently.",
-    body: "Once the direction is clear, I handle the work — from ghostwriting and repurposing to multi-channel content and the pages that give interested people somewhere useful to go next.",
+    title: "Execute",
+    headline: "I put the plan into action.",
+    body: "I create and run what we need to reach those customers — whether that's advertising, content, a simple web page, outreach, or a combination that makes sense.",
+    tags: "Ads · Content · Web Pages · Outreach",
+  },
+  {
+    number: "04",
+    title: "Win Customers",
+    headline: "Getting attention is only the beginning.",
+    body: "We make it easy for interested people to contact your business and improve what happens after they enquire, helping turn more enquiries into customers.",
+    tags: "Enquiries · WhatsApp · Follow-up",
+  },
+  {
+    number: "05",
+    title: "Measure & Improve",
+    headline: "We find out what's actually working.",
+    body: "We look at what's bringing enquiries and customers, improve what works, and stop wasting time or money on what doesn't.",
+    tags: "Results · Customers · Improvement",
   },
 ];
 
@@ -31,11 +48,11 @@ export function HowItWorks() {
         </h2>
 
         <div className="mt-12 grid gap-10 lg:mt-16 lg:grid-cols-2 lg:items-start lg:gap-16">
-          <figure className="relative overflow-hidden border border-white/10 lg:sticky lg:top-28">
+          <figure className="relative -mx-5 overflow-hidden border-y border-white/10 sm:-mx-8 lg:sticky lg:top-28 lg:mx-0 lg:border lg:border-white/10">
             <div className="relative aspect-[16/10] lg:aspect-[4/5] lg:min-h-[32rem]">
               <Image
                 src={audiencePhoto}
-                alt="A microphone in front of a seated audience"
+                alt="Prosper Mukungurutse"
                 fill
                 placeholder="blur"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -48,9 +65,14 @@ export function HowItWorks() {
             </div>
           </figure>
 
-          <ol className="space-y-12 sm:space-y-16">
-            {steps.map((step) => (
-              <li key={step.number}>
+          <ol className="space-y-4 sm:space-y-6">
+            {steps.map((step, index) => (
+              <li
+                key={step.number}
+                className={`-mx-5 p-5 sm:-mx-8 sm:p-8 lg:mx-0 lg:px-8 ${
+                  index % 2 === 0 ? "bg-white/4" : "bg-transparent"
+                }`}
+              >
                 <div className="flex items-end gap-5">
                   <span className="text-[clamp(2rem,4vw,3rem)] font-medium leading-none tracking-[-0.04em] text-purple">
                     {step.number}
@@ -67,6 +89,9 @@ export function HowItWorks() {
                 </p>
                 <p className="mt-4 max-w-xl text-sm leading-relaxed text-mist sm:text-base">
                   {step.body}
+                </p>
+                <p className="mt-4 text-[0.7rem] font-medium tracking-[0.18em] text-purple uppercase">
+                  {step.tags}
                 </p>
               </li>
             ))}

@@ -26,19 +26,19 @@ export function Hero() {
       />
 
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col px-5 sm:px-8 lg:min-h-[calc(100svh-8.25rem)]">
-        <div className="flex flex-1 flex-col items-center justify-center py-20 text-center lg:py-16">
+        <div className="flex flex-1 flex-col items-start justify-center py-20 text-left lg:py-16">
           <p className="animate-fade-up text-[0.7rem] font-medium tracking-[0.22em] text-mist uppercase">
             Authority, built with intent
           </p>
 
           <h1
-            className="animate-fade-up mx-auto mt-6 max-w-4xl text-[clamp(2.85rem,8vw,5rem)] font-bold leading-[1.02] tracking-[-0.04em] text-fog"
+            className="animate-fade-up mt-6 max-w-4xl text-[clamp(2.85rem,8vw,5rem)] font-bold leading-[1.02] tracking-[-0.04em] text-fog"
             style={{ animationDelay: "0.12s" }}
           >
-            GET KNOWN FOR{" "}
+            Making Brands{" "}
             <br className="hidden sm:block" />
             <span className="relative inline-block pb-[0.06em]">
-              WHAT YOU DO BEST.
+              Easy To Remember
               <span
                 aria-hidden
                 className="hero-accent-line absolute inset-x-0 bottom-0 h-px bg-purple"
@@ -47,28 +47,24 @@ export function Hero() {
           </h1>
 
           <p
-            className="animate-fade-up mx-auto mt-8 max-w-2xl text-base leading-relaxed text-mist sm:text-lg lg:max-w-3xl"
+            className="animate-fade-up mt-8 max-w-2xl text-base leading-relaxed text-mist sm:text-lg lg:max-w-3xl"
             style={{ animationDelay: "0.24s" }}
           >
-            I help founders, executives, consultants and service business
-            owners
-            <br className="hidden lg:block" />
-            find the right message, create content around it and show up
-            consistently
-            <br className="hidden lg:block" />
-            where the people they want to reach already spend their time.
+            I help SMEs turn attention into customers by finding the right
+            message, reaching the right people,
+            and creating a clear path from interest to enquiry to sale
           </p>
 
-          <div className="mt-10 flex w-full flex-col items-center gap-8">
+          <div className="mt-10 flex w-full flex-col items-start gap-8">
             <div
-              className="animate-fade-up w-full"
+              className="animate-fade-up hidden w-full sm:block"
               style={{ animationDelay: "0.52s" }}
             >
               <HeroChannels />
             </div>
 
             <div
-              className="animate-fade-up flex flex-col items-center gap-3 sm:flex-row sm:justify-center"
+              className="animate-fade-up flex flex-col items-start gap-3 sm:flex-row sm:justify-start"
               style={{ animationDelay: "0.42s" }}
             >
               <WhatsAppButton

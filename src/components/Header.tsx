@@ -7,7 +7,6 @@ import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
 const links = [
   { href: "#methodology", label: "How it works" },
-  { href: "#services", label: "Services" },
   { href: "#about", label: "About" },
 ];
 
