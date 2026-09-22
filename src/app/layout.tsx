@@ -43,19 +43,22 @@ const siteUrl = absoluteUrl(site.siteUrl);
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${site.handle} · digital authority for african founders`,
-    template: `%s · ${site.handle}`,
+    default: `${site.fullName} (${site.handle}) — marketing that brings you customers`,
+    template: `%s · ${site.fullName} (${site.handle})`,
   },
   description: site.description,
   keywords: [
-    "african founders",
-    "landing pages",
-    "personal brand",
-    "kudziemuks",
+    "Kudzaishe Prosper Mukungurutse",
+    "Kudzie Mukungurutse",
+    "Kudzai Mukungurutse",
+    "Prosper Mukungurutse",
+    "Kudziemuks",
+    "Kudzie Muks",
+    "customer growth review",
+    "SME marketing Zimbabwe",
     "whatsapp leads",
-    "zimbabwe web design",
   ],
-  authors: [{ name: site.handle, url: site.linkedinUrl }],
+  authors: [{ name: site.fullName, url: site.linkedinUrl }],
   openGraph: {
     title: site.title,
     description: site.description,
@@ -73,14 +76,25 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.fullName,
+  alternateName: site.alternateNames,
+  url: siteUrl,
+  jobTitle: "Marketing Consultant",
+  sameAs: [site.linkedinUrl, site.facebookUrl, site.instagramUrl, site.xUrl],
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   name: site.handle,
   url: siteUrl,
   description: site.description,
+  founder: { "@type": "Person", name: site.fullName },
   areaServed: ["ZW", "ZA", "ZM", "KE", "NG"],
-  sameAs: [site.linkedinUrl],
+  sameAs: [site.linkedinUrl, site.facebookUrl, site.instagramUrl, site.xUrl],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -93,6 +107,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <span aria-hidden>{">"}</span> skip to content
         </a>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

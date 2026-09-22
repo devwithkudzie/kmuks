@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { site } from "@/lib/site";
 import { WhatsAppButton } from "@/components/WhatsAppIntake";
 
@@ -8,6 +9,9 @@ export function Footer() {
         <p className="font-script text-2xl text-fog">Kudzie Muks</p>
 
         <div className="flex flex-wrap gap-6 text-sm">
+          <Link href="/insights" className="transition hover:text-fog">
+            Insights
+          </Link>
           <a
             href={site.linkedinUrl}
             target="_blank"
@@ -15,6 +19,30 @@ export function Footer() {
             className="transition hover:text-fog"
           >
             LinkedIn
+          </a>
+          <a
+            href={site.facebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition hover:text-fog"
+          >
+            Facebook
+          </a>
+          <a
+            href={site.instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition hover:text-fog"
+          >
+            Instagram
+          </a>
+          <a
+            href={site.xUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition hover:text-fog"
+          >
+            X
           </a>
           <a
             href={site.calendlyUrl}

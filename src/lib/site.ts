@@ -26,10 +26,24 @@ function resolveSiteUrl() {
 export const site = {
   name: "kudziemuks",
   handle: "kudziemuks",
-  title: "expertise alone isn’t enough. stop relying on word-of-mouth.",
+  fullName: "Kudzaishe Prosper Mukungurutse",
+  alternateNames: [
+    "Kudzie Mukungurutse",
+    "Kudzai Mukungurutse",
+    "Prosper Mukungurutse",
+    "Kudzie",
+    "Kudzai",
+    "Kudziemuks",
+    "Kudzie Muks",
+  ],
+  title:
+    "Kudzaishe Prosper Mukungurutse (Kudziemuks) — marketing that brings you customers",
   description:
-    "we build lightweight, mobile-optimized content engines and landing pages that turn local expertise into consistent client inquiries.",
+    "Kudzaishe Prosper Mukungurutse — known as Kudzie or Kudzai — helps SMEs find the right message, create content around it, and turn attention into customers.",
   linkedinUrl: "https://www.linkedin.com/in/kmuks",
+  facebookUrl: "https://www.facebook.com/prospermuks",
+  instagramUrl: "https://www.instagram.com/prospermuks/",
+  xUrl: "https://x.com/prospermuks",
   linkedinPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID ?? "",
   calendlyUrl:
     process.env.NEXT_PUBLIC_CALENDLY_URL ??

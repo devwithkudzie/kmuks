@@ -14,7 +14,7 @@ export function About() {
             <div className="relative aspect-[4/5] min-h-[22rem] lg:min-h-[32rem]">
               <Image
                 src={portrait}
-                alt="Prosper Mukungurutse"
+                alt="Kudzaishe Prosper Mukungurutse (Kudzie)"
                 fill
                 placeholder="blur"
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -22,7 +22,7 @@ export function About() {
               />
             </div>
             <figcaption className="border-t border-white/10 px-4 py-3 text-[0.7rem] tracking-[0.18em] text-mist uppercase">
-              Kudzie Mukungurutse
+              Kudzaishe Prosper Mukungurutse
             </figcaption>
           </figure>
 
@@ -31,7 +31,8 @@ export function About() {
               Marketing should bring you customers.
             </h2>
             <p className="mt-8 max-w-xl text-lg leading-loose text-mist">
-              I&rsquo;m Prosper Mukungurutse. I help SMEs figure out
+              I&rsquo;m Kudzaishe Prosper Mukungurutse — known as Kudzie or
+              Kudzai. I help SMEs figure out
               what&rsquo;s actually stopping their marketing from bringing in
               more customers — before deciding what to fix.
             </p>
