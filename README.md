@@ -34,3 +34,27 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Local Google Sheets authentication
+
+Google Sheets uses Vercel OIDC with Google Workload Identity Federation. For
+local development, link this directory to the existing Vercel project:
+
+```sh
+npx vercel login
+npx vercel link --project kmuks
+```
+
+Choose the team that owns the project. The installed `@vercel/oidc` needs
+the ignored `.vercel/project.json` to refresh expired local tokens using
+your Vercel login. Newer CLI versions may retain only `.vercel/repo.json`.
+In that case, create `.vercel/project.json` from the matching project entry:
+use its `id` as `projectId`, `orgId` as `orgId`, and `name` as `projectName`.
+Do not commit these local metadata files.
+
+If the dashboard reports `project.json not found`, repeat the project-link
+command and reload `/admin`. If refresh reports an expired CLI login, run
+`npx vercel login` again. The React DevTools and HMR messages are normal
+local-development output.
+
+See [Vercel OIDC documentation](https://vercel.com/docs/oidc) for setup details.

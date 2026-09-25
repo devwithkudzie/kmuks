@@ -9,7 +9,6 @@ export const CHECKLIST_STEPS = [
   "Delivery & Payment",
   "Customers & Sales",
   "Previous Marketing",
-  "Campaign Assets",
   "Review & Submit",
 ] as const;
 

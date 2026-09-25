@@ -1,3 +1,4 @@
+import { TemplateSetupForm } from "@/components/client-setup/TemplateSetupForm";
 import type { Metadata } from "next";
 import { ClientSetupForm } from "@/components/client-setup/ClientSetupForm";
 import { resolveSetupLinkForClient } from "@/lib/client-setup/links-service";
@@ -66,11 +67,11 @@ export default async function ClientSetupTokenPage({
       <div className="mx-auto max-w-2xl px-5 py-10 sm:px-8 sm:py-16 lg:max-w-6xl lg:px-12">
         <p className="font-script text-2xl text-fog">Kudzie Muks</p>
         <div className="mt-10">
-          <ClientSetupForm
+          {result.template ? <TemplateSetupForm token={token} template={result.template} campaign={{ id: result.campaignId, businessName: result.businessName, product: result.product, campaignName: result.campaignName, referenceCode: "CLIENT", driveClientFolder: "", driveCampaignFolder: "" }} /> : <ClientSetupForm
             campaignId={result.campaignId}
             campaignName={result.campaignName}
             token={token}
-          />
+          />}
         </div>
       </div>
     </div>

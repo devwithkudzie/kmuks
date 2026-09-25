@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { getCampaignConfig } from "@/lib/client-setup/campaigns";
 import { unitWordFor } from "@/lib/client-setup/constants";
-import { markSetupLinkSubmitted } from "@/lib/client-setup/links-service";
+import { deriveStatus, markSetupLinkSubmitted } from "@/lib/client-setup/links-service";
 import { getSetupLinkByToken } from "@/lib/google/setup-links";
 import { buildSubmissionReference } from "@/lib/client-setup/reference";
 import { clientSetupSubmissionSchema } from "@/lib/client-setup/schema";
 import { GoogleConfigError } from "@/lib/google/auth";
-import { driveFolderUrl, getCampaignRootFolderId } from "@/lib/google/drive";
 import {
   appendSubmissionRow,
   ensureSheetHeaderExists,
@@ -48,16 +47,20 @@ export async function POST(request: Request) {
   }
 
   const data = parsed.data;
-  const campaign = getCampaignConfig(data.campaignId);
-  let campaignName = campaign.campaignName;
-  if (data.token) {
-    try {
-      const existingLink = await getSetupLinkByToken(data.token);
-      const named = existingLink?.link.campaignName.trim();
-      if (named) campaignName = named;
-    } catch (error) {
-      console.error("[client-setup/submit] could not read the setup link name:", error);
+  if (!data.token) return NextResponse.json({ error: "A valid setup link is required." }, { status: 403 });
+  let campaign;
+  let campaignName;
+  try {
+    const existing = await getSetupLinkByToken(data.token);
+    if (!existing || ["Disabled", "Expired"].includes(deriveStatus(existing.link))) {
+      return NextResponse.json({ error: "This link is no longer available." }, { status: 403 });
     }
+    if (existing.link.templateJson) return NextResponse.json({ error: "Reload this link to use its selected template." }, { status: 400 });
+    const base = getCampaignConfig(existing.link.campaignId);
+    campaign = { ...base, businessName: existing.link.businessName, product: existing.link.product };
+    campaignName = existing.link.campaignName.trim() || base.campaignName;
+  } catch {
+    return NextResponse.json({ error: "Could not verify your setup link. Please try again." }, { status: 503 });
   }
   const submissionId = buildSubmissionReference(campaign, data.clientDraftId);
   const unit = unitWordFor(campaign.product);
@@ -83,19 +86,6 @@ export async function POST(request: Request) {
     await ensureSheetHeaderExists();
   } catch (error) {
     console.error("[client-setup/submit] could not verify sheet header:", error);
-  }
-
-  let driveFolderLink = "";
-  try {
-    const rootFolderId = await getCampaignRootFolderId(
-      campaign.driveClientFolder,
-      campaign.driveCampaignFolder,
-    );
-    driveFolderLink = driveFolderUrl(rootFolderId);
-  } catch (error) {
-    // Files may have already uploaded successfully even if this summary
-    // lookup fails — don't block the submission on it.
-    console.error("[client-setup/submit] could not resolve the Drive folder link:", error);
   }
 
   const price = `$${data.product.priceAmount} per ${data.product.priceQuantity} ${unit}`;
@@ -155,7 +145,7 @@ export async function POST(request: Request) {
     platformsUsed,
     data.marketing.whatWorkedWell,
     data.marketing.whatDidntWork,
-    driveFolderLink,
+    "",
     "New",
     detailsJson,
   ];

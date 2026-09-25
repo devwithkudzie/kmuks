@@ -9,11 +9,8 @@ import { ProductPricingStep } from "./steps/ProductPricingStep";
 import { DeliveryPaymentStep } from "./steps/DeliveryPaymentStep";
 import { CustomerSalesStep } from "./steps/CustomerSalesStep";
 import { PreviousMarketingStep } from "./steps/PreviousMarketingStep";
-import { CampaignAssetsStep } from "./steps/CampaignAssetsStep";
 import { ReviewSubmitStep } from "./steps/ReviewSubmitStep";
-import type { UploadItem } from "./uploadTypes";
 import { getCampaignConfig } from "@/lib/client-setup/campaigns";
-import { ASSET_CATEGORIES, type AssetCategoryId } from "@/lib/client-setup/constants";
 import {
   emptyContact,
   emptyCustomerSales,
@@ -24,15 +21,12 @@ import {
   isDeliveryStepComplete,
   isMarketingStepComplete,
   isProductStepComplete,
-  type AssetFile,
   type ContactValues,
   type CustomerSalesValues,
   type DeliveryPaymentValues,
   type PreviousMarketingValues,
   type ProductPricingValues,
 } from "@/lib/client-setup/schema";
-
-type PersistedAssets = AssetFile[];
 
 type FormState = {
   clientDraftId: string;
@@ -43,35 +37,7 @@ type FormState = {
   customers: CustomerSalesValues;
   marketing: PreviousMarketingValues;
   contact: ContactValues;
-  assetsByCategory: Record<AssetCategoryId, UploadItem[]>;
 };
-
-function emptyAssetsByCategory(): Record<AssetCategoryId, UploadItem[]> {
-  return Object.fromEntries(ASSET_CATEGORIES.map((c) => [c.id, []])) as unknown as Record<
-    AssetCategoryId,
-    UploadItem[]
-  >;
-}
-
-function assetsByCategoryFrom(assets: PersistedAssets): Record<AssetCategoryId, UploadItem[]> {
-  const grouped = emptyAssetsByCategory();
-  for (const asset of assets) {
-    const categoryId = asset.category as AssetCategoryId;
-    if (!grouped[categoryId]) continue;
-    grouped[categoryId] = [
-      ...grouped[categoryId],
-      {
-        localId: asset.fileId,
-        name: asset.name,
-        size: asset.size,
-        status: "done",
-        progress: 100,
-        result: asset,
-      },
-    ];
-  }
-  return grouped;
-}
 
 function createDraftId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
@@ -88,7 +54,6 @@ function initialFormState(): FormState {
     customers: emptyCustomerSales,
     marketing: emptyPreviousMarketing,
     contact: emptyContact,
-    assetsByCategory: emptyAssetsByCategory(),
   };
 }
 
@@ -131,18 +96,16 @@ export function ClientSetupForm({
           customers?: CustomerSalesValues;
           marketing?: PreviousMarketingValues;
           contact?: ContactValues;
-          assets?: PersistedAssets;
         };
         next = {
           clientDraftId: parsed.clientDraftId || createDraftId(),
-          step: parsed.step || 1,
-          maxStepReached: Math.max(parsed.maxStepReached ?? 1, parsed.step ?? 1),
+          step: Math.min(Math.max(parsed.step || 1, 1), 5),
+          maxStepReached: Math.min(5, Math.max(parsed.maxStepReached ?? 1, parsed.step ?? 1)),
           product: parsed.product ?? emptyProductPricing,
           delivery: parsed.delivery ?? emptyDeliveryPayment,
           customers: parsed.customers ?? emptyCustomerSales,
           marketing: parsed.marketing ?? emptyPreviousMarketing,
           contact: parsed.contact ?? emptyContact,
-          assetsByCategory: assetsByCategoryFrom(parsed.assets ?? []),
         };
       } else {
         next = { ...initialFormState(), clientDraftId: createDraftId() };
@@ -159,15 +122,6 @@ export function ClientSetupForm({
     setHydrated(true);
   }, [storageKey]);
 
-  const flatAssets: AssetFile[] = useMemo(
-    () =>
-      Object.values(state.assetsByCategory)
-        .flat()
-        .filter((item): item is UploadItem & { result: AssetFile } => item.status === "done" && !!item.result)
-        .map((item) => item.result),
-    [state.assetsByCategory],
-  );
-
   // Persist to localStorage whenever meaningful state changes.
   useEffect(() => {
     if (!hydrated || submissionId) return;
@@ -183,17 +137,16 @@ export function ClientSetupForm({
           customers: state.customers,
           marketing: state.marketing,
           contact: state.contact,
-          assets: flatAssets,
         }),
       );
     } catch {
       // Local storage may be unavailable (private browsing, quota) — safe to ignore.
     }
-  }, [hydrated, submissionId, storageKey, state, flatAssets]);
+  }, [hydrated, submissionId, storageKey, state]);
 
   const goNext = () =>
     setState((s) => {
-      const step = Math.min(s.step + 1, 6);
+      const step = Math.min(s.step + 1, 5);
       return { ...s, step, maxStepReached: Math.max(s.maxStepReached, step) };
     });
   const goBack = () => setState((s) => ({ ...s, step: Math.max(s.step - 1, 1) }));
@@ -205,13 +158,6 @@ export function ClientSetupForm({
   const setCustomers = (customers: CustomerSalesValues) => setState((s) => ({ ...s, customers }));
   const setMarketing = (marketing: PreviousMarketingValues) => setState((s) => ({ ...s, marketing }));
   const setContact = (contact: ContactValues) => setState((s) => ({ ...s, contact }));
-
-  const handleCategoryChange = (category: AssetCategoryId, items: UploadItem[]) => {
-    setState((s) => ({
-      ...s,
-      assetsByCategory: { ...s.assetsByCategory, [category]: items },
-    }));
-  };
 
   const handleSubmit = async () => {
     if (submitting) return;
@@ -231,7 +177,6 @@ export function ClientSetupForm({
           customers: state.customers,
           marketing: state.marketing,
           contact: state.contact,
-          assets: flatAssets,
         }),
       });
 
@@ -257,13 +202,8 @@ export function ClientSetupForm({
     }
   };
 
-  // A step the client has never reached yet is always "upcoming", even one
-  // with no required fields (Campaign Assets) — otherwise it would read as
-  // complete before they've seen it. Once a step has been visited, its
-  // status reflects its *current* data, so going back to an earlier step
-  // doesn't wrongly "uncomplete" later steps whose answers are still saved,
-  // and clearing a required field on a visited step correctly drops it back.
-  const statuses: StepStatus[] = [1, 2, 3, 4, 5, 6].map((stepNumber) => {
+  // Visited steps reflect their current required-field validation.
+  const statuses: StepStatus[] = [1, 2, 3, 4, 5].map((stepNumber) => {
     if (stepNumber === state.step) return "current";
     if (stepNumber > state.maxStepReached) return "upcoming";
     switch (stepNumber) {
@@ -275,8 +215,6 @@ export function ClientSetupForm({
         return isCustomersStepComplete(state.customers) ? "completed" : "upcoming";
       case 4:
         return isMarketingStepComplete(state.marketing) ? "completed" : "upcoming";
-      case 5:
-        return "completed";
       default:
         return "upcoming";
     }
@@ -336,23 +274,12 @@ export function ClientSetupForm({
               />
             ) : null}
             {state.step === 5 ? (
-              <CampaignAssetsStep
-                campaignId={campaign.id}
-                productName={campaign.product}
-                assetsByCategory={state.assetsByCategory}
-                onCategoryChange={handleCategoryChange}
-                onNext={goNext}
-                onBack={goBack}
-              />
-            ) : null}
-            {state.step === 6 ? (
               <ReviewSubmitStep
                 productName={campaign.product}
                 product={state.product}
                 delivery={state.delivery}
                 customers={state.customers}
                 marketing={state.marketing}
-                assets={flatAssets}
                 contact={state.contact}
                 onContactChange={setContact}
                 onEditStep={setStep}

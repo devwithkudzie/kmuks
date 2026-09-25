@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Great_Vibes, Inter, Newsreader } from "next/font/google";
+import { GoogleTag } from "@/components/GoogleTag";
 import { LinkedInInsight } from "@/components/LinkedInInsight";
 import { site } from "@/lib/site";
 import "./globals.css";
@@ -116,6 +117,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {children}
+        <GoogleTag />
         <LinkedInInsight />
       </body>
     </html>

@@ -44,7 +44,7 @@ export function PreviousMarketingStep({
       supportingText="What you've done before (if any)."
       onNext={handleNext}
       onBack={onBack}
-      nextLabel="Continue to Campaign Assets →"
+      nextLabel="Continue to Review & Submit →"
     >
       <RadioField
         label={`Have you promoted your ${productName} before?`}

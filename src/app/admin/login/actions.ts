@@ -15,7 +15,7 @@ function isSafeNextPath(value: FormDataEntryValue | null): value is string {
 export async function loginAction(_prevState: LoginState, formData: FormData): Promise<LoginState> {
   const password = formData.get("password");
   const nextField = formData.get("next");
-  const nextPath = isSafeNextPath(nextField) ? nextField : "/admin/client-setup";
+  const nextPath = isSafeNextPath(nextField) ? nextField : "/admin";
 
   const requestHeaders = await headers();
   const ip = clientIpFrom(requestHeaders);

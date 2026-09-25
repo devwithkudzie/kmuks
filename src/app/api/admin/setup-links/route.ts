@@ -1,3 +1,5 @@
+import { z } from "zod";
+import { listFormTemplates } from "@/lib/google/templates";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin/auth";
 import { createNewSetupLink, listSetupLinkViews } from "@/lib/client-setup/links-service";
@@ -27,21 +29,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json().catch(() => ({}));
-  const campaignName = typeof body.campaignName === "string" ? body.campaignName.trim() : "";
-  const expiresInDays =
-    typeof body.expiresInDays === "number" && body.expiresInDays > 0 ? body.expiresInDays : undefined;
-
-  if (!campaignName) {
-    return NextResponse.json({ error: "Enter a campaign name." }, { status: 400 });
-  }
-
-  if (campaignName.length > 120) {
-    return NextResponse.json({ error: "Campaign name must be 120 characters or fewer." }, { status: 400 });
-  }
+  const parsed = z.object({
+    businessName: z.string().trim().min(1, "Enter an organization name.").max(120),
+    product: z.string().trim().min(1, "Enter a product or service.").max(120),
+    campaignName: z.string().trim().min(1, "Enter a campaign name.").max(120),
+    templateId: z.string().min(1),
+    expiresInHours: z.number().int().min(1).max(3650 * 24).optional(),
+  }).safeParse(await request.json().catch(() => null));
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
+  const { businessName, product, campaignName, templateId, expiresInHours } = parsed.data;
 
   try {
-    const link = await createNewSetupLink(undefined, expiresInDays, campaignName);
+    const template = (await listFormTemplates()).find((item) => item.id === templateId);
+    if (!template) return NextResponse.json({ error: "Select an available template." }, { status: 400 });
+    const link = await createNewSetupLink(undefined, expiresInHours, campaignName, { businessName, product, template });
     return NextResponse.json({ link });
   } catch (error) {
     if (error instanceof GoogleConfigError) {

@@ -7,7 +7,6 @@ import { focusRing } from "../styles";
 import { unitWordFor } from "@/lib/client-setup/constants";
 import {
   contactSchema,
-  type AssetFile,
   type ContactValues,
   type CustomerSalesValues,
   type DeliveryPaymentValues,
@@ -49,7 +48,6 @@ export function ReviewSubmitStep({
   delivery,
   customers,
   marketing,
-  assets,
   contact,
   onContactChange,
   onEditStep,
@@ -63,7 +61,6 @@ export function ReviewSubmitStep({
   delivery: DeliveryPaymentValues;
   customers: CustomerSalesValues;
   marketing: PreviousMarketingValues;
-  assets: AssetFile[];
   contact: ContactValues;
   onContactChange: (values: ContactValues) => void;
   onEditStep: (step: number) => void;
@@ -118,7 +115,6 @@ export function ReviewSubmitStep({
           .join(" • ")
       : "Not previously advertised";
 
-  const assetsSummary = assets.length ? `${assets.length} file${assets.length > 1 ? "s" : ""} uploaded` : "";
 
   return (
     <StepShell
@@ -135,7 +131,6 @@ export function ReviewSubmitStep({
         <SummaryRow title="Delivery & Payment" summary={deliverySummary} step={2} onEdit={onEditStep} />
         <SummaryRow title="Customers & Sales" summary={customersSummary} step={3} onEdit={onEditStep} />
         <SummaryRow title="Previous Marketing" summary={marketingSummary} step={4} onEdit={onEditStep} />
-        <SummaryRow title="Campaign Assets" summary={assetsSummary} step={5} onEdit={onEditStep} />
       </div>
 
       <div className="mt-8 border-t border-white/10 pt-6">

@@ -110,3 +110,34 @@ export async function appendSubmissionRow(row: (string | number)[]): Promise<voi
     requestBody: { values: [row] },
   });
 }
+
+export type SubmissionRecord = Record<(typeof SUBMISSION_COLUMNS)[number], string>;
+
+/** Read only: an unused spreadsheet is an empty dashboard, not a new tab. */
+export async function listSubmissions(): Promise<SubmissionRecord[]> {
+  const sheets = sheetsClient();
+  const spreadsheetId = getClientSetupSpreadsheetId();
+  const spreadsheet = await sheets.spreadsheets.get({
+    spreadsheetId,
+    fields: "sheets.properties.title",
+  });
+  if (!spreadsheet.data.sheets?.some((sheet) => sheet.properties?.title === SHEET_NAME)) {
+    return [];
+  }
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `'${SHEET_NAME}'!A:AB`,
+    valueRenderOption: "FORMATTED_VALUE",
+  });
+  const [headers = [], ...rows] = result.data.values ?? [];
+  const indexes = SUBMISSION_COLUMNS.map((column) => headers.indexOf(column));
+  if (indexes.some((index) => index === -1)) {
+    throw new Error("Client Submissions sheet headers do not match the expected columns.");
+  }
+  return rows
+    .filter((row) => row[indexes[0]])
+    .map((row) => Object.fromEntries(
+      SUBMISSION_COLUMNS.map((column, index) => [column, String(row[indexes[index]] ?? "")]),
+    ) as SubmissionRecord)
+    .sort((a, b) => (Date.parse(b["Submitted At"]) || 0) - (Date.parse(a["Submitted At"]) || 0));
+}

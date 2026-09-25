@@ -15,6 +15,7 @@ export const SETUP_LINK_COLUMNS = [
   "Submitted At",
   "Submission ID",
   "Campaign Name",
+  "Template JSON",
 ] as const;
 
 export type SetupLinkRow = {
@@ -29,6 +30,7 @@ export type SetupLinkRow = {
   submittedAt: string;
   submissionId: string;
   campaignName: string;
+  templateJson: string;
 };
 
 function rowToLink(row: string[]): SetupLinkRow {
@@ -44,6 +46,7 @@ function rowToLink(row: string[]): SetupLinkRow {
     submittedAt: row[8] ?? "",
     submissionId: row[9] ?? "",
     campaignName: row[10] ?? "",
+    templateJson: row[11] ?? "",
   };
 }
 
@@ -60,6 +63,7 @@ function linkToRow(link: SetupLinkRow): string[] {
     link.submittedAt,
     link.submissionId,
     link.campaignName,
+    link.templateJson,
   ];
 }
 
@@ -71,7 +75,7 @@ export async function ensureSetupLinksHeaderExists(): Promise<void> {
 
   const existing = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${SHEET_NAME}!A1:K1`,
+    range: `${SHEET_NAME}!A1:L1`,
   });
 
   const header = (existing.data.values?.[0] ?? []) as string[];
@@ -83,6 +87,13 @@ export async function ensureSetupLinksHeaderExists(): Promise<void> {
       requestBody: { values: [[...SETUP_LINK_COLUMNS]] },
     });
     return;
+  }
+
+  if (header[11] !== "Template JSON") {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId, range: `${SHEET_NAME}!L1`, valueInputOption: "RAW",
+      requestBody: { values: [["Template JSON"]] },
+    });
   }
 
   if (header[10] !== "Campaign Name") {
@@ -101,7 +112,7 @@ export async function listSetupLinks(): Promise<SetupLinkRow[]> {
 
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${SHEET_NAME}!A2:K`,
+    range: `${SHEET_NAME}!A2:L`,
   });
 
   return (result.data.values ?? []).map((row) => rowToLink(row as string[]));
@@ -116,7 +127,7 @@ export async function getSetupLinkByToken(token: string): Promise<{
 
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${SHEET_NAME}!A2:K`,
+    range: `${SHEET_NAME}!A2:L`,
   });
 
   const rows = result.data.values ?? [];
@@ -148,8 +159,28 @@ export async function updateSetupLinkRow(
 
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `${SHEET_NAME}!A${rowNumber}:K${rowNumber}`,
+    range: `${SHEET_NAME}!A${rowNumber}:L${rowNumber}`,
     valueInputOption: "RAW",
     requestBody: { values: [linkToRow(link)] },
+  });
+}
+
+export async function deleteSetupLinkRow(rowNumber: number): Promise<void> {
+  const sheets = sheetsClient();
+  const spreadsheetId = getClientSetupSpreadsheetId();
+
+  const metadata = await sheets.spreadsheets.get({ spreadsheetId, fields: "sheets.properties(sheetId,title)" });
+  const sheetId = metadata.data.sheets?.find((sheet) => sheet.properties?.title === SHEET_NAME)?.properties?.sheetId;
+  if (sheetId == null) throw new Error(`Sheet "${SHEET_NAME}" not found.`);
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [{
+        deleteDimension: {
+          range: { sheetId, dimension: "ROWS", startIndex: rowNumber - 1, endIndex: rowNumber },
+        },
+      }],
+    },
   });
 }

@@ -1,7 +1,6 @@
+import { listFormTemplates } from "@/lib/google/templates";
 import type { Metadata } from "next";
 import { requireAdminOrRedirect } from "@/lib/admin/auth";
-import { signOutAction } from "@/app/admin/login/actions";
-import { focusRing } from "@/components/client-setup/styles";
 import { AdminLinksManager } from "@/components/admin/AdminLinksManager";
 import { listSetupLinkViews } from "@/lib/client-setup/links-service";
 import { GoogleConfigError } from "@/lib/google/auth";
@@ -20,10 +19,11 @@ export default async function AdminClientSetupPage() {
   await requireAdminOrRedirect("/admin/client-setup");
 
   let links: Awaited<ReturnType<typeof listSetupLinkViews>> = [];
+  let templates: Awaited<ReturnType<typeof listFormTemplates>> = [];
   let configError: string | undefined;
 
   try {
-    links = await listSetupLinkViews();
+    [links, templates] = await Promise.all([listSetupLinkViews(), listFormTemplates()]);
   } catch (error) {
     console.error("[admin/client-setup] could not load setup links:", error);
     configError =
@@ -33,31 +33,24 @@ export default async function AdminClientSetupPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8 sm:py-24">
-      <div className="flex items-center justify-between">
+    <main className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+      <header className="flex flex-wrap items-center justify-between gap-6">
         <div>
-          <p className="text-[0.7rem] font-medium tracking-[0.24em] text-purple uppercase">
+          <p className="text-xs font-medium tracking-[0.24em] text-purple uppercase">
             Admin
           </p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight text-fog sm:text-3xl">
+          <h1 className="mt-2 text-3xl font-bold tracking-tight">
             Client Setup Links
           </h1>
+          <p className="mt-3 text-sm text-mist">Create and manage client setup links.</p>
         </div>
-        <form action={signOutAction}>
-          <button
-            type="submit"
-            className={`text-sm font-medium text-mist transition hover:text-fog ${focusRing}`}
-          >
-            Sign Out
-          </button>
-        </form>
-      </div>
+      </header>
 
       {configError ? (
         <p className="mt-8 rounded-md bg-purple/10 px-4 py-3 text-sm text-fog">{configError}</p>
       ) : (
-        <AdminLinksManager initialLinks={links} baseUrl={getSetupBaseUrl()} />
+        <AdminLinksManager initialTemplates={templates} initialLinks={links} baseUrl={getSetupBaseUrl()} />
       )}
-    </div>
+    </main>
   );
 }

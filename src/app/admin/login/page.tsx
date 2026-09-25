@@ -16,7 +16,7 @@ export default async function AdminLoginPage({
   searchParams: Promise<{ next?: string }>;
 }) {
   const { next } = await searchParams;
-  const safeNext = isSafeNextPath(next) ? next : "/admin/client-setup";
+  const safeNext = isSafeNextPath(next) ? next : "/admin";
 
   return (
     <div className="mx-auto flex min-h-full max-w-sm flex-col justify-center px-5 py-24">

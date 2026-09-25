@@ -1,7 +1,10 @@
+import { randomUUID } from "node:crypto";
+import { templateSchema, type FormTemplate } from "./templates";
 import { getCampaignConfig } from "./campaigns";
 import { generateSetupToken } from "./tokens";
 import {
   createSetupLink,
+  deleteSetupLinkRow,
   ensureSetupLinksHeaderExists,
   getSetupLinkByToken,
   listSetupLinks,
@@ -38,22 +41,24 @@ export async function listSetupLinkViews(): Promise<SetupLinkView[]> {
 
 export async function createNewSetupLink(
   campaignId?: string,
-  expiresInDays?: number,
+  expiresInHours?: number,
   campaignName?: string,
+  organization?: { businessName: string; product: string; template: FormTemplate },
 ): Promise<SetupLinkView> {
   await ensureSetupLinksHeaderExists();
   const campaign = getCampaignConfig(campaignId);
   const now = new Date();
-  const expiresAt = expiresInDays
-    ? new Date(now.getTime() + expiresInDays * 24 * 60 * 60 * 1000).toISOString()
+  const expiresAt = expiresInHours
+    ? new Date(now.getTime() + expiresInHours * 60 * 60 * 1000).toISOString()
     : "";
 
   const link: SetupLinkRow = {
     token: generateSetupToken(),
-    campaignId: campaign.id,
-    businessName: campaign.businessName,
-    product: campaign.product,
+    campaignId: organization ? `campaign-${randomUUID()}` : campaign.id,
+    businessName: organization?.businessName ?? campaign.businessName,
+    product: organization?.product ?? campaign.product,
     campaignName: campaignName?.trim() || campaign.campaignName,
+    templateJson: organization ? JSON.stringify(organization.template) : "",
     status: "Active",
     createdAt: now.toISOString(),
     expiresAt,
@@ -82,14 +87,20 @@ export function setSetupLinkEnabled(token: string, enabled: boolean) {
   return mutateLink(token, (link) => ({ ...link, status: enabled ? "Active" : "Disabled" }));
 }
 
-export function extendSetupLinkExpiry(token: string, days: number) {
+export function extendSetupLinkExpiry(token: string, hours: number) {
   return mutateLink(token, (link) => {
-    const base = link.expiresAt && new Date(link.expiresAt).getTime() > Date.now()
-      ? new Date(link.expiresAt)
-      : new Date();
-    base.setDate(base.getDate() + days);
-    return { ...link, expiresAt: base.toISOString() };
+    const current = link.expiresAt ? new Date(link.expiresAt).getTime() : 0;
+    const base = Math.max(current, Date.now());
+    return { ...link, expiresAt: new Date(base + hours * 60 * 60 * 1000).toISOString() };
   });
+}
+
+/** Removes the link row only; any submission it produced stays in Client Submissions. */
+export async function deleteSetupLink(token: string): Promise<boolean> {
+  const existing = await getSetupLinkByToken(token);
+  if (!existing) return false;
+  await deleteSetupLinkRow(existing.rowNumber);
+  return true;
 }
 
 export async function regenerateSetupLink(token: string): Promise<SetupLinkView | null> {
@@ -115,6 +126,9 @@ export async function resolveSetupLinkForClient(token: string): Promise<{
   ok: true;
   campaignId: string;
   campaignName: string;
+  businessName: string;
+  product: string;
+  template: FormTemplate | null;
 } | {
   ok: false;
   reason: "not_found" | "disabled" | "expired";
@@ -138,6 +152,9 @@ export async function resolveSetupLinkForClient(token: string): Promise<{
     ok: true,
     campaignId: existing.link.campaignId,
     campaignName: existing.link.campaignName.trim() || campaign.campaignName,
+    businessName: existing.link.businessName,
+    product: existing.link.product,
+    template: existing.link.templateJson ? templateSchema.parse(JSON.parse(existing.link.templateJson)) : null,
   };
 }
 
