@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CampaignConfig } from "@/lib/client-setup/campaigns";
 import { site } from "@/lib/site";
 
@@ -31,14 +32,22 @@ export function SubmissionSuccess({
         Reference: {submissionId}
       </p>
 
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-8 inline-flex min-h-12 items-center rounded-md bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet"
-      >
-        Message Prosper on WhatsApp
-      </a>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-12 items-center justify-center rounded-md bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet"
+        >
+          Message Prosper on WhatsApp
+        </a>
+        <Link
+          href="/"
+          className="inline-flex min-h-12 items-center justify-center rounded-md border border-white/10 px-6 text-sm font-medium text-fog transition hover:border-white/25"
+        >
+          Visit kudziemuks.com →
+        </Link>
+      </div>
     </div>
   );
 }

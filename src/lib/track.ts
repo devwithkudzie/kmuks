@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-export function trackCta(channel: "calendly" | "whatsapp") {
+export function trackCta(channel: "calendly" | "whatsapp" | "form") {
   if (typeof window === "undefined") return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: "cta_click", channel });

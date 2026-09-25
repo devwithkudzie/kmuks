@@ -19,7 +19,7 @@ export function CtaPair({
         source={source}
         className="inline-flex min-h-12 items-center justify-center rounded-lg bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet"
       >
-        chat on whatsapp
+        work with me
       </WhatsAppButton>
       <a
         href={site.calendlyUrl}

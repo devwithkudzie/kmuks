@@ -19,7 +19,12 @@ export type SetupLinkStatus =
   | "Disabled"
   | "Expired";
 
-export type SetupLinkView = SetupLinkRow & { derivedStatus: SetupLinkStatus };
+export type SetupLinkView = SetupLinkRow & {
+  derivedStatus: SetupLinkStatus;
+  templateName: string;
+  /** Public campaign links take many applications; setup links take one submission. */
+  publicCampaign: boolean;
+};
 
 export function deriveStatus(link: SetupLinkRow): SetupLinkStatus {
   if (link.status === "Disabled") return "Disabled";
@@ -30,7 +35,18 @@ export function deriveStatus(link: SetupLinkRow): SetupLinkStatus {
 }
 
 function withDerivedStatus(link: SetupLinkRow): SetupLinkView {
-  return { ...link, derivedStatus: deriveStatus(link) };
+  let template: FormTemplate | null = null;
+  try {
+    template = link.templateJson ? parseStoredTemplate(link.templateJson) : null;
+  } catch {
+    // Unreadable template: still list the link so it can be disabled or deleted.
+  }
+  return {
+    ...link,
+    derivedStatus: deriveStatus(link),
+    templateName: template?.name ?? "Original setup form",
+    publicCampaign: template?.kind === "public",
+  };
 }
 
 export async function listSetupLinkViews(): Promise<SetupLinkView[]> {
@@ -132,13 +148,21 @@ export async function resolveSetupLinkForClient(token: string): Promise<{
 } | {
   ok: false;
   reason: "not_found" | "disabled" | "expired";
+  publicCampaign?: boolean;
 }> {
   const existing = await getSetupLinkByToken(token);
   if (!existing) return { ok: false, reason: "not_found" };
 
   const status = deriveStatus(existing.link);
-  if (status === "Disabled") return { ok: false, reason: "disabled" };
-  if (status === "Expired") return { ok: false, reason: "expired" };
+  if (status === "Disabled" || status === "Expired") {
+    let publicCampaign = false;
+    try {
+      publicCampaign = !!existing.link.templateJson && parseStoredTemplate(existing.link.templateJson).kind === "public";
+    } catch {
+      // A malformed template only affects the wording of this message.
+    }
+    return { ok: false, reason: status === "Disabled" ? "disabled" : "expired", publicCampaign };
+  }
 
   if (!existing.link.openedAt) {
     await updateSetupLinkRow(existing.rowNumber, {

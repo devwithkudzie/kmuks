@@ -58,3 +58,28 @@ command and reload `/admin`. If refresh reports an expired CLI login, run
 local-development output.
 
 See [Vercel OIDC documentation](https://vercel.com/docs/oidc) for setup details.
+
+## "Work with me" leads and WhatsApp alerts
+
+Every "Work with me" / contact button on the main site opens the same short form. Submissions are saved to the **Work With Me** tab of the client setup spreadsheet (created automatically), including which button was clicked (`Source`), the page, and any UTM tags.
+
+After a lead is saved, the site sends you a WhatsApp alert through Meta's WhatsApp Cloud API. If the `WHATSAPP_*` variables are blank, alerts are skipped and leads are still saved.
+
+Setup:
+
+1. In [Meta for Developers](https://developers.facebook.com/), create a Business app and add the **WhatsApp** product. Register a phone number to send from (it can't be the WhatsApp number you use day to day).
+2. Create a **permanent access token** for a system user in Meta Business Settings with `whatsapp_business_messaging` permission, and copy the **Phone number ID** from the WhatsApp → API Setup page.
+3. In WhatsApp Manager, create a message template, category **Utility**, named e.g. `new_lead_alert`, language English, with this body, and wait for approval:
+
+   ```
+   New lead from kudziemuks.com
+   Name: {{1}}
+   Business: {{2}}
+   WhatsApp: {{3}}
+   What they do: {{4}}
+   Source: {{5}}
+   ```
+
+4. Set `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_NOTIFY_TO` (your number, digits only), `WHATSAPP_TEMPLATE_NAME` and `WHATSAPP_TEMPLATE_LANGUAGE` (the template's language code, e.g. `en` or `en_US`) in Vercel and `.env.local`.
+
+Failed alerts are logged as `[work-with-me] WhatsApp notification failed:` with Meta's error message.

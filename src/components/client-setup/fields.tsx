@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, type ReactNode } from "react";
-import { fieldClass, labelClass } from "./styles";
+import { fieldClass, labelClass, optionTileClass } from "./styles";
 
 export function FieldWrapper({
   label,
@@ -28,15 +28,21 @@ export function FieldWrapper({
   const LabelTag = labelFor ? "label" : "span";
 
   return (
-    <div className="mt-6 first:mt-0">
+    <div className="mt-7 first:mt-0">
       <LabelTag htmlFor={labelFor} className={labelClass}>
         {label}
-        {required ? <span className="text-purple"> *</span> : null}
-        {optional ? <span className="normal-case text-mist/60"> (Optional)</span> : null}
+        {required ? <span className="text-purple-300" aria-hidden> *</span> : null}
+        {required ? <span className="sr-only"> (required)</span> : null}
+        {optional ? <span className="font-normal text-mist"> (optional)</span> : null}
       </LabelTag>
-      {hint ? <p className="mt-1 text-xs text-mist/70">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-[0.8rem] leading-relaxed text-mist">{hint}</p> : null}
       {children}
-      {error ? <p className="mt-2 text-sm text-purple">{error}</p> : null}
+      {error ? (
+        <p role="alert" className="mt-2 flex items-start gap-1.5 text-sm text-rose-300">
+          <span aria-hidden className="mt-px">⚠</span>
+          <span>{error}</span>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -68,7 +74,7 @@ export function TextField({
       required={required}
       optional={optional}
     >
-      <input {...props} id={fieldId} className={fieldClass} />
+      <input {...props} id={fieldId} aria-invalid={error ? true : undefined} className={fieldClass} />
     </FieldWrapper>
   );
 }
@@ -100,7 +106,7 @@ export function TextAreaField({
       required={required}
       optional={optional}
     >
-      <textarea {...props} id={fieldId} rows={props.rows ?? 4} className={`${fieldClass} resize-y`} />
+      <textarea {...props} id={fieldId} aria-invalid={error ? true : undefined} rows={props.rows ?? 4} className={`${fieldClass} resize-y`} />
     </FieldWrapper>
   );
 }
@@ -142,6 +148,7 @@ export function SelectField({
     >
       <select
         id={fieldId}
+        aria-invalid={error ? true : undefined}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className={fieldClass}
@@ -186,15 +193,15 @@ export function RadioField({
 
   return (
     <FieldWrapper label={label} hint={hint} error={error} required={required}>
-      <div className="mt-2 flex flex-wrap gap-x-6 gap-y-3" role="radiogroup" aria-label={label}>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label={label}>
         {items.map((item) => (
-          <label key={item.id} className="flex cursor-pointer items-center gap-2 text-sm text-fog">
+          <label key={item.id} className={optionTileClass}>
             <input
               type="radio"
               name={groupName}
               checked={value === item.id}
               onChange={() => onChange(item.id)}
-              className="size-4 accent-purple"
+              className="size-4 shrink-0 accent-purple"
             />
             {item.label}
           </label>
@@ -234,14 +241,18 @@ export function CheckboxListField({
 
   return (
     <FieldWrapper label={label} hint={hint} error={error} required={required} optional={optional}>
-      <div className="mt-2 space-y-2" role="group" aria-label={label}>
+      <div
+        className={`mt-3 grid gap-2 ${options.every((option) => option.length <= 18) ? "grid-cols-2" : "sm:grid-cols-2"}`}
+        role="group"
+        aria-label={label}
+      >
         {options.map((option) => (
-          <label key={option} className="flex cursor-pointer items-center gap-2 text-sm text-fog">
+          <label key={option} className={optionTileClass}>
             <input
               type="checkbox"
               checked={values.includes(option)}
               onChange={() => toggle(option)}
-              className="size-4 rounded accent-purple"
+              className="size-4 shrink-0 rounded accent-purple"
             />
             {option}
           </label>

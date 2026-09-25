@@ -118,7 +118,7 @@ function MobileMenu({
               onOpen={onClose}
               className={`transition hover:text-fog ${focus}`}
             >
-              WhatsApp
+              Contact
             </WhatsAppButton>
           </div>
         </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { ConfirmDialog } from "./ConfirmDialog";
-import { TemplateBuilder } from "./TemplateBuilder";
 import type { FormTemplate } from "@/lib/client-setup/templates";
 import { useEffect, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
@@ -44,17 +43,20 @@ function linkGroup(link: SetupLinkView, now: number): LinkGroup {
 }
 
 export function AdminLinksManager({
-  initialTemplates,
+  templates,
   initialLinks,
   baseUrl,
+  createTemplateId,
 }: {
-  initialTemplates: FormTemplate[];
+  templates: FormTemplate[];
   initialLinks: SetupLinkView[];
   baseUrl: string;
+  /** Opens the create modal with this template selected, e.g. from ?create=… */
+  createTemplateId?: string;
 }) {
-  const setupUrl = (token: string) => new URL(`/client/setup/${encodeURIComponent(token)}`, baseUrl).href;
-  const [templates, setTemplates] = useState(initialTemplates);
-  const [templateId, setTemplateId] = useState(initialTemplates[0]?.id ?? "");
+  const setupUrl = (link: SetupLinkView) =>
+    new URL(`/${link.publicCampaign ? "apply" : "client/setup"}/${encodeURIComponent(link.token)}`, baseUrl).href;
+  const [templateId, setTemplateId] = useState(createTemplateId ?? templates[0]?.id ?? "");
   const [businessName, setBusinessName] = useState("");
   const [product, setProduct] = useState("");
   const [links, setLinks] = useState(initialLinks);
@@ -70,6 +72,13 @@ export function AdminLinksManager({
   const [createError, setCreateError] = useState<string>();
   const [pendingDelete, setPendingDelete] = useState<SetupLinkView>();
   const createDialog = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    if (!createTemplateId) return;
+    createDialog.current?.showModal();
+    // Drop ?create= so a refresh doesn't reopen the modal.
+    window.history.replaceState(null, "", window.location.pathname);
+  }, [createTemplateId]);
 
   const openCreate = () => {
     setCreateError(undefined);
@@ -155,14 +164,18 @@ export function AdminLinksManager({
     }
   };
 
+  const selectedTemplate = templates.find((template) => template.id === templateId);
+  const isPublicTemplate = selectedTemplate?.kind === "public";
+
   const groupCounts = Object.fromEntries(
     LINK_GROUPS.map((name) => [name, links.filter((link) => linkGroup(link, now) === name).length]),
   ) as Record<LinkGroup, number>;
   const visibleLinks = links.filter((link) => linkGroup(link, now) === group);
 
-  const copyLink = async (token: string) => {
+  const copyLink = async (link: SetupLinkView) => {
+    const token = link.token;
     try {
-      await navigator.clipboard.writeText(setupUrl(token));
+      await navigator.clipboard.writeText(setupUrl(link));
       setCopiedToken(token);
       setTimeout(() => setCopiedToken(undefined), 2000);
     } catch {
@@ -172,7 +185,6 @@ export function AdminLinksManager({
 
   return (
     <div className="mt-10">
-      <TemplateBuilder templates={templates} onSaved={(template) => { setTemplates((old) => [...old, template]); setTemplateId(template.id); }} />
       <dialog
         ref={createDialog}
         aria-labelledby="create-link-title"
@@ -200,19 +212,26 @@ export function AdminLinksManager({
           <div className="mt-6 grid gap-5 sm:grid-cols-2">
             <label>
               <span className={labelClass}>Organization name</span>
-              <input list="organizations" required className={fieldClass} value={businessName} maxLength={120} onChange={(e) => setBusinessName(e.target.value)} placeholder="e.g. Victors Holdings" />
+              <input list="organizations" required className={fieldClass} value={businessName} maxLength={120} onChange={(e) => setBusinessName(e.target.value)} placeholder={isPublicTemplate ? "e.g. Kudziemuks" : "e.g. Victors Holdings"} />
             </label>
             <datalist id="organizations">{[...new Set(links.map((link) => link.businessName))].map((name) => <option key={name} value={name} />)}</datalist>
-            <label>
-              <span className={labelClass}>Product or service</span>
-              <input required className={fieldClass} value={product} maxLength={120} onChange={(e) => setProduct(e.target.value)} placeholder="e.g. Red Common Bricks" />
-            </label>
+            {isPublicTemplate ? null : (
+              <label>
+                <span className={labelClass}>Product or service</span>
+                <input required className={fieldClass} value={product} maxLength={120} onChange={(e) => setProduct(e.target.value)} placeholder="e.g. Red Common Bricks" />
+              </label>
+            )}
             <label className="sm:col-span-2">
               <span className={labelClass}>Form template</span>
               <select className={fieldClass} value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
                 {templates.map((template) => <option key={template.id} value={template.id}>{template.name}</option>)}
               </select>
-              <span className="mt-2 block text-xs text-mist">{templates.find((template) => template.id === templateId)?.description}</span>
+              <span className="mt-2 block text-xs text-mist">{selectedTemplate?.description}</span>
+              {isPublicTemplate ? (
+                <span className="mt-2 block text-xs text-mist">
+                  Public campaign: one link to post anywhere. Many people can apply, and responses go to their own tab in your Google Sheet.
+                </span>
+              ) : null}
             </label>
             <label className="sm:col-span-2">
               <span className={labelClass}>Campaign name</span>
@@ -264,7 +283,7 @@ export function AdminLinksManager({
             </button>
             <button
               type="submit"
-              disabled={creating || !campaignName.trim() || !businessName.trim() || !product.trim() || !templateId}
+              disabled={creating || !campaignName.trim() || !businessName.trim() || (!isPublicTemplate && !product.trim()) || !templateId}
               className={`inline-flex min-h-12 items-center justify-center rounded-md bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
             >
               {creating ? "Generating…" : "Generate Link"}
@@ -336,13 +355,22 @@ export function AdminLinksManager({
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-medium text-fog">
-                      {link.businessName} — {link.product}
+                      {link.businessName}{link.product ? ` — ${link.product}` : ""}
+                      {link.publicCampaign ? (
+                        <span className="ml-2 rounded-full bg-purple/15 px-2 py-0.5 align-middle text-[0.65rem] font-medium tracking-wide text-purple uppercase">
+                          Public campaign
+                        </span>
+                      ) : null}
                     </p>
                     {link.campaignName ? (
                       <p className="mt-1 text-sm text-mist">{link.campaignName}</p>
                     ) : null}
                     <p className={`mt-1 text-xs font-medium tracking-wide uppercase ${statusClass(status)}`}>
-                      {status}
+                      {link.publicCampaign && linkGroup(link, now) === "Active" ? "Accepting applications" : status}
+                    </p>
+                    <p className="mt-1 text-xs text-mist/70">
+                      {link.templateName}
+                      {link.publicCampaign ? " · Add ?utm_source=facebook (or instagram, whatsapp…) to track where applicants come from." : ""}
                     </p>
                   </div>
                   <div className="text-right text-xs text-mist/70">
@@ -352,10 +380,10 @@ export function AdminLinksManager({
                 </div>
 
                 <div className="mt-4 flex items-center gap-2 rounded-md bg-canvas px-3 py-2">
-                  <code className="min-w-0 flex-1 truncate text-xs text-mist">{setupUrl(link.token)}</code>
+                  <code className="min-w-0 flex-1 truncate text-xs text-mist">{setupUrl(link)}</code>
                   <button
                     type="button"
-                    onClick={() => copyLink(link.token)}
+                    onClick={() => copyLink(link)}
                     className={`shrink-0 text-xs font-medium text-purple transition hover:text-violet ${focusRing}`}
                   >
                     {copiedToken === link.token ? "Copied" : "Copy"}

@@ -14,7 +14,7 @@ import {
 } from "react";
 import { X } from "lucide-react";
 import { trackCta } from "@/lib/track";
-import { whatsappHref, type SocialProfile } from "@/lib/site";
+import { site, whatsappHref, type SocialProfile } from "@/lib/site";
 
 type IntakeContextValue = {
   open: (source: string) => void;
@@ -79,10 +79,14 @@ export function WhatsAppButton({
 export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [source, setSource] = useState("work-with-me");
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   const [name, setName] = useState("");
   const [businessName, setBusinessName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const [businessDescription, setBusinessDescription] = useState("");
   const [onlineProfiles, setOnlineProfiles] = useState<SocialProfile[]>([]);
@@ -94,6 +98,10 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
     setStep(1);
     setName("");
     setBusinessName("");
+    setWhatsapp("");
+    setHoneypot("");
+    setSubmitting(false);
+    setSubmitError("");
     setBusinessDescription("");
     setOnlineProfiles([]);
   };
@@ -146,7 +154,7 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
 
   const onContinueStep1 = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!name.trim() || !businessName.trim()) return;
+    if (!name.trim() || !businessName.trim() || !whatsapp.trim()) return;
     setStep(2);
   };
 
@@ -156,27 +164,52 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
     setStep(3);
   };
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    setSubmitError("");
 
-    trackCta("whatsapp");
     const fullOnlineProfiles = onlineProfiles
       .filter((profile) => profile.url.trim())
       .map((profile) => ({
         platform: profile.platform,
         url: `${onlinePlatforms.find((p) => p.id === profile.platform)?.prefix ?? ""}${profile.url.trim()}`,
       }));
-    window.open(
-      whatsappHref(source, {
-        name: name.trim(),
-        businessName: businessName.trim(),
-        businessDescription: businessDescription.trim(),
-        onlineProfiles: fullOnlineProfiles,
-      }),
-      "_blank",
-      "noopener,noreferrer",
-    );
-    closeIntake();
+    const query = new URLSearchParams(window.location.search);
+
+    try {
+      const response = await fetch("/api/work-with-me", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source,
+          page: window.location.pathname,
+          name: name.trim(),
+          businessName: businessName.trim(),
+          whatsapp: whatsapp.trim(),
+          businessDescription: businessDescription.trim(),
+          onlineProfiles: fullOnlineProfiles,
+          utm: {
+            source: query.get("utm_source") ?? "",
+            medium: query.get("utm_medium") ?? "",
+            campaign: query.get("utm_campaign") ?? "",
+          },
+          website: honeypot,
+        }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setSubmitError(body.error ?? "Could not send your details. Please try again.");
+        return;
+      }
+      trackCta("form");
+      setStep(4);
+    } catch {
+      setSubmitError("Could not reach the server. Please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -242,6 +275,23 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
                   />
                 </label>
 
+                <label className="mt-4 block text-[0.7rem] tracking-[0.16em] text-mist uppercase">
+                  WhatsApp number
+                  <input
+                    required
+                    type="tel"
+                    name="whatsapp"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    pattern="\+?[\d\s()\-]{7,20}"
+                    title="Enter a valid WhatsApp number, e.g. +263 77 000 0000"
+                    value={whatsapp}
+                    onChange={(event) => setWhatsapp(event.target.value)}
+                    placeholder="e.g. +263 77 000 0000"
+                    className={field}
+                  />
+                </label>
+
                 <div className="mt-6">
                   <button
                     type="submit"
@@ -282,7 +332,7 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
                   </button>
                 </div>
               </form>
-            ) : (
+            ) : step === 3 ? (
               <form onSubmit={onSubmit}>
                 <p className="text-[0.7rem] font-medium tracking-[0.16em] text-purple uppercase">
                   Step 3 of 3
@@ -355,15 +405,56 @@ export function WhatsAppIntakeProvider({ children }: { children: ReactNode }) {
                   </div>
                 ) : null}
 
+                {/* Honeypot: invisible to people, tempting to bots. */}
+                <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                  <label>
+                    Website
+                    <input tabIndex={-1} autoComplete="off" value={honeypot} onChange={(event) => setHoneypot(event.target.value)} />
+                  </label>
+                </div>
+
+                {submitError ? (
+                  <p role="alert" className="mt-6 rounded-lg border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+                    {submitError}
+                  </p>
+                ) : null}
+
                 <div className="mt-6">
                   <button
                     type="submit"
-                    className={`inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
+                    disabled={submitting}
+                    className={`inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet disabled:cursor-not-allowed disabled:opacity-60 ${focus}`}
                   >
-                    Get My Free Customer Growth Review
+                    {submitting ? "Sending…" : "Get My Free Customer Growth Review"}
                   </button>
                 </div>
               </form>
+            ) : (
+              <div role="status" className="text-center">
+                <p className="text-[0.7rem] font-medium tracking-[0.16em] text-purple uppercase">Received</p>
+                <h2 id={titleId} className="mt-2 text-2xl font-bold tracking-tight">
+                  Thanks, {name.trim().split(/\s+/)[0]}!
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-mist">
+                  I&rsquo;ve got your details for {businessName.trim()}. I&rsquo;ll review your business and message
+                  you on WhatsApp at {whatsapp.trim()}.
+                </p>
+                <button
+                  type="button"
+                  onClick={closeIntake}
+                  className={`mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-purple px-5 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
+                >
+                  Back to the site
+                </button>
+                <a
+                  href={whatsappHref(source)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-block text-sm text-mist underline-offset-4 hover:text-fog hover:underline"
+                >
+                  Prefer to chat now? Message {site.handle} on WhatsApp
+                </a>
+              </div>
             )}
           </div>
         </div>

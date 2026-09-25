@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     const link = existing.link;
     if (!link.templateJson) return NextResponse.json({ error: "This link uses the original setup form. Reload the page." }, { status: 400 });
     const template = parseStoredTemplate(link.templateJson);
+    if (template.kind === "public") return NextResponse.json({ error: "Reload this link to apply." }, { status: 400 });
     const checked = validateAnswers(template, data.answers);
     if (Object.keys(checked.errors).length) return NextResponse.json({ error: "Please check your answers.", fieldErrors: checked.errors }, { status: 400 });
     // A token identifies one client campaign; retries keep the same reference.

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { listFormTemplates } from "@/lib/google/templates";
+import { BUILT_IN_TEMPLATES } from "@/lib/client-setup/templates";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin/auth";
 import { createNewSetupLink, listSetupLinkViews } from "@/lib/client-setup/links-service";
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
   const parsed = z.object({
     businessName: z.string().trim().min(1, "Enter an organization name.").max(120),
-    product: z.string().trim().min(1, "Enter a product or service.").max(120),
+    product: z.string().trim().max(120).default(""),
     campaignName: z.string().trim().min(1, "Enter a campaign name.").max(120),
     templateId: z.string().min(1),
     expiresInHours: z.number().int().min(1).max(3650 * 24).optional(),
@@ -40,8 +40,9 @@ export async function POST(request: Request) {
   const { businessName, product, campaignName, templateId, expiresInHours } = parsed.data;
 
   try {
-    const template = (await listFormTemplates()).find((item) => item.id === templateId);
+    const template = BUILT_IN_TEMPLATES.find((item) => item.id === templateId);
     if (!template) return NextResponse.json({ error: "Select an available template." }, { status: 400 });
+    if (!product && template.kind !== "public") return NextResponse.json({ error: "Enter a product or service." }, { status: 400 });
     const link = await createNewSetupLink(undefined, expiresInHours, campaignName, { businessName, product, template });
     return NextResponse.json({ link });
   } catch (error) {

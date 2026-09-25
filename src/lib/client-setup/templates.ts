@@ -1,7 +1,9 @@
 import { unitWordFor } from "./constants";
 import { z } from "zod";
 
-export const FIELD_TYPES = ["text", "textarea", "select", "radio", "checkboxes", "price", "quantity"] as const;
+export const FIELD_TYPES = ["text", "textarea", "select", "radio", "checkboxes", "price", "quantity", "phone", "consent"] as const;
+/** An option that can't be combined with others in a multiple-choice question. */
+export const EXCLUSIVE_OPTION = "None";
 const CHOICE_TYPES: readonly string[] = ["select", "radio", "checkboxes"];
 
 const fieldSchema = z.object({
@@ -18,6 +20,8 @@ const fieldSchema = z.object({
   unit: z.string().trim().max(40).default(""),
   // Only ask this question when another question's answer is (or includes) this option.
   showIf: z.object({ field: z.string().max(60), equals: z.string().max(120) }).optional(),
+  // Public campaigns: short column header in the responses sheet. Blank uses the question.
+  column: z.string().trim().max(60).default(""),
 }).superRefine((field, ctx) => {
   if (CHOICE_TYPES.includes(field.type) && !field.options.length) {
     ctx.addIssue({ code: "custom", message: "Choice fields need options." });
@@ -26,10 +30,22 @@ const fieldSchema = z.object({
     ctx.addIssue({ code: "custom", message: "Options must be unique." });
   }
 });
+const copySchema = z.object({
+  heading: z.string().trim().max(160).default(""),
+  intro: z.string().trim().max(1500).default(""),
+  submitLabel: z.string().trim().max(60).default(""),
+  successHeading: z.string().trim().max(160).default(""),
+  successBody: z.string().trim().max(1000).default(""),
+});
+
 export const templateSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/).max(80),
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().max(300),
+  // "setup": one client fills in their link once, with contact + review steps.
+  // "public": one shareable link, many people apply on a single page.
+  kind: z.enum(["setup", "public"]).default("setup"),
+  copy: copySchema.default({ heading: "", intro: "", submitLabel: "", successHeading: "", successBody: "" }),
   fields: z.array(fieldSchema).min(1).max(60),
 }).superRefine((template, ctx) => {
   const ids = template.fields.map((field) => field.id);
@@ -79,6 +95,7 @@ export function formatAnswer(field: TemplateField, value: string | string[] | un
     if (!amount) return "";
     return `$${amount.replace(/^\$/, "")}${quantity ? ` per ${quantity} ${unitFor(field, product)}` : ""}`;
   }
+  if (field.type === "consent") return value === "yes" ? "Yes" : "No";
   if (field.type === "quantity") {
     return typeof value === "string" && value ? `${value} ${unitFor(field, product)}` : "";
   }
@@ -108,10 +125,15 @@ export function validateAnswers(template: FormTemplate, input: unknown, fields =
     } else if (field.type === "checkboxes") {
       if (!Array.isArray(value) || value.some((item) => !field.options.includes(item))) errors[field.id] = "Select valid options.";
       else if (field.required && !value.length) errors[field.id] = "Select at least one option.";
+      else if (value.includes(EXCLUSIVE_OPTION) && value.length > 1) errors[field.id] = `"${EXCLUSIVE_OPTION}" can't be combined with other options.`;
+    } else if (field.type === "consent") {
+      if (value !== "" && value !== "yes") errors[field.id] = "Invalid answer.";
+      else if (field.required && value !== "yes") errors[field.id] = "Please tick this box to continue.";
     } else if (typeof value !== "string") errors[field.id] = "Enter a text answer.";
     else if (field.required && !value.trim()) errors[field.id] = CHOICE_TYPES.includes(field.type) ? "Select an option." : "This field is required.";
     else if ((field.type === "select" || field.type === "radio") && value && !field.options.includes(value)) errors[field.id] = "Select a valid option.";
     else if (field.type === "quantity" && value.trim() && !/^[\d,]+(\.\d+)?$/.test(value.trim())) errors[field.id] = "Enter a number, e.g. 1,000.";
+    else if (field.type === "phone" && value.trim() && !/^\+?[\d\s()-]{7,20}$/.test(value.trim())) errors[field.id] = "Enter a valid phone number, e.g. +263 77 000 0000.";
   }
   return { answers, errors };
 }
@@ -122,14 +144,18 @@ const question = (
   section: string,
   type: TemplateField["type"] = "text",
   extra: Partial<Omit<TemplateField, "id" | "label" | "section" | "type">> = {},
-): TemplateField => ({ id, label, section, type, required: false, options: [], hint: "", placeholder: "", unit: "", ...extra });
+): TemplateField => ({ id, label, section, type, required: false, options: [], hint: "", placeholder: "", unit: "", column: "", ...extra });
 
 export const BULK_VARIES = "Changes for larger orders";
+
+const noCopy = { heading: "", intro: "", submitLabel: "", successHeading: "", successBody: "" };
 
 export const CONSTRUCTION_TEMPLATE: FormTemplate = {
   id: "construction-materials-v1",
   name: "Construction & Building Materials",
   description: "For bricks, cement, timber, aggregates and other building materials.",
+  kind: "setup",
+  copy: noCopy,
   fields: [
     question("price", "Price", "Product & Pricing", "price", { required: true }),
     question("minimum_order", "Minimum order", "Product & Pricing", "quantity", { required: true, placeholder: "1,000" }),
@@ -205,12 +231,48 @@ export const CONSTRUCTION_TEMPLATE: FormTemplate = {
   ],
 };
 
+export const FREE_WEBSITE_TEMPLATE: FormTemplate = {
+  id: "free-website-campaign-v1",
+  name: "Free Website Campaign",
+  description: "Public promo: local businesses apply for a free website. One link, many applications.",
+  kind: "public",
+  copy: {
+    heading: "Get a Free Website for Your Business",
+    intro: "I'm looking for 2 local businesses to build a website for free this week. I'm putting together a few local examples and would love your honest feedback in return.\n\nInterested? Complete the short form below.",
+    submitLabel: "Apply for a Free Website",
+    successHeading: "Application received!",
+    successBody: "I'll review the applications and contact selected businesses directly via WhatsApp.",
+  },
+  fields: [
+    question("your_name", "Your name", "Application", "text", { column: "Name", required: true, placeholder: "e.g. Tendai Moyo" }),
+    question("business_name", "Business name", "Application", "text", { column: "Business Name", required: true, placeholder: "e.g. Fresh Cuts Barbershop" }),
+    question("business_type", "What type of business do you run?", "Application", "text", { column: "Business Type",
+      required: true, hint: "Example: barber, restaurant, clothing shop, mechanic, etc.", placeholder: "e.g. Barbershop",
+    }),
+    question("location", "Where is your business located?", "Application", "text", { column: "Location", required: true, placeholder: "e.g. Avondale, Harare" }),
+    question("whatsapp", "WhatsApp number", "Application", "phone", { column: "WhatsApp", required: true, placeholder: "e.g. +263 77 000 0000" }),
+    question("social_platforms", "Which social media platforms does your business currently use?", "Application", "checkboxes", { column: "Social Platforms",
+      required: true,
+      hint: "Select all that apply.",
+      options: ["Facebook", "Instagram", "TikTok", "LinkedIn", "X (Twitter)", "WhatsApp Business", "Other", EXCLUSIVE_OPTION],
+    }),
+    question("business_description", "Tell me briefly what your business does.", "Application", "textarea", { column: "Business Description",
+      required: true, placeholder: "e.g. We offer haircuts, beard trims and styling for men and kids, open 7 days a week.",
+    }),
+    question("whatsapp_updates", "I'd like to receive useful tips, examples and future opportunities for my business from Kudziemuks via WhatsApp.", "Application", "consent", { column: "WhatsApp Updates Opt-in",
+      hint: "Optional",
+    }),
+  ],
+};
+
+export const BUILT_IN_TEMPLATES = [CONSTRUCTION_TEMPLATE, FREE_WEBSITE_TEMPLATE];
+
 /**
  * Parses a template saved on a setup link or in the Form Templates tab.
- * Links store a copy of their template; links on the built-in construction
- * template always get its current questions so improvements reach them too.
+ * Links store a copy of their template; links on a built-in template always
+ * get its current questions so improvements reach them too.
  */
 export function parseStoredTemplate(json: string): FormTemplate {
   const template = templateSchema.parse(JSON.parse(json));
-  return template.id === CONSTRUCTION_TEMPLATE.id ? CONSTRUCTION_TEMPLATE : template;
+  return BUILT_IN_TEMPLATES.find((item) => item.id === template.id) ?? template;
 }

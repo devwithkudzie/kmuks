@@ -141,3 +141,39 @@ export async function listSubmissions(): Promise<SubmissionRecord[]> {
     ) as SubmissionRecord)
     .sort((a, b) => (Date.parse(b["Submitted At"]) || 0) - (Date.parse(a["Submitted At"]) || 0));
 }
+
+/**
+ * Appends one row to `tab`, creating the tab if needed. Values are matched to
+ * columns by header name; any wanted column the tab doesn't have yet is added
+ * at the end, so existing rows stay aligned.
+ */
+export async function appendRowByHeader(
+  tab: string,
+  columns: readonly string[],
+  values: Record<string, string>,
+): Promise<void> {
+  const sheets = sheetsClient();
+  const spreadsheetId = getClientSetupSpreadsheetId();
+  await ensureSheetTabExists(tab);
+
+  const existing = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'${tab}'!1:1` });
+  const header = ((existing.data.values?.[0] ?? []) as unknown[]).map(String);
+  const missing = columns.filter((column) => !header.includes(column));
+  if (missing.length) {
+    header.push(...missing);
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `'${tab}'!1:1`,
+      valueInputOption: "RAW",
+      requestBody: { values: [header] },
+    });
+  }
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `'${tab}'!A1`,
+    valueInputOption: "RAW",
+    insertDataOption: "INSERT_ROWS",
+    requestBody: { values: [header.map((column) => values[column] ?? "")] },
+  });
+}

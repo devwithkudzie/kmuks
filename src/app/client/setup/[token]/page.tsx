@@ -1,4 +1,6 @@
 import { TemplateSetupForm } from "@/components/client-setup/TemplateSetupForm";
+import { PublicCampaignForm } from "@/components/client-setup/PublicCampaignForm";
+import { FormPageShell } from "@/components/client-setup/FormPageShell";
 import type { Metadata } from "next";
 import { ClientSetupForm } from "@/components/client-setup/ClientSetupForm";
 import { resolveSetupLinkForClient } from "@/lib/client-setup/links-service";
@@ -9,6 +11,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Campaign Setup",
   robots: { index: false, follow: false },
+};
+
+const CLOSED_CAMPAIGN_COPY = {
+  heading: "Applications for this campaign have closed.",
+  body: "Thank you for your interest. Follow Kudziemuks for future opportunities.",
 };
 
 const REASON_COPY: Record<string, { heading: string; body: string }> = {
@@ -30,12 +37,19 @@ const REASON_COPY: Record<string, { heading: string; body: string }> = {
   },
 };
 
+function firstParam(value: string | string[] | undefined) {
+  return (Array.isArray(value) ? value[0] : value ?? "").slice(0, 200);
+}
+
 export default async function ClientSetupTokenPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { token } = await params;
+  const query = await searchParams;
 
   let result: Awaited<ReturnType<typeof resolveSetupLinkForClient>>;
   try {
@@ -50,30 +64,56 @@ export default async function ClientSetupTokenPage({
   }
 
   if (!result.ok) {
-    const copy = REASON_COPY[result.reason] ?? REASON_COPY.error;
+    const copy = result.publicCampaign ? CLOSED_CAMPAIGN_COPY : REASON_COPY[result.reason] ?? REASON_COPY.error;
     return (
-      <div className="min-h-dvh bg-canvas text-fog">
-        <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-5 py-16 text-center sm:px-8">
-          <p className="font-script text-2xl text-fog">Kudzie Muks</p>
-          <h1 className="mt-8 text-2xl font-bold tracking-tight text-fog">{copy.heading}</h1>
-          <p className="mt-4 text-sm leading-relaxed text-mist sm:text-base">{copy.body}</p>
+      <FormPageShell>
+        <div className="mx-auto flex max-w-md flex-col justify-center px-5 py-24 text-center sm:px-8">
+          <h1 className="text-2xl font-bold tracking-tight text-balance text-fog">{copy.heading}</h1>
+          <p className="mt-4 text-sm leading-relaxed text-pretty text-mist sm:text-base">{copy.body}</p>
         </div>
-      </div>
+      </FormPageShell>
+    );
+  }
+
+  if (result.template?.kind === "public") {
+    return (
+      <FormPageShell>
+        <PublicCampaignForm
+          token={token}
+          template={result.template}
+          product={result.product}
+          utm={{
+            source: firstParam(query.utm_source),
+            medium: firstParam(query.utm_medium),
+            campaign: firstParam(query.utm_campaign),
+            content: firstParam(query.utm_content),
+          }}
+        />
+      </FormPageShell>
     );
   }
 
   return (
-    <div className="min-h-dvh bg-canvas text-fog">
-      <div className="mx-auto max-w-2xl px-5 py-10 sm:px-8 sm:py-16 lg:max-w-6xl lg:px-12">
-        <p className="font-script text-2xl text-fog">Kudzie Muks</p>
-        <div className="mt-10">
-          {result.template ? <TemplateSetupForm token={token} template={result.template} campaign={{ id: result.campaignId, businessName: result.businessName, product: result.product, campaignName: result.campaignName, referenceCode: "CLIENT", driveClientFolder: "", driveCampaignFolder: "" }} /> : <ClientSetupForm
-            campaignId={result.campaignId}
-            campaignName={result.campaignName}
+    <FormPageShell>
+      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
+        {result.template ? (
+          <TemplateSetupForm
             token={token}
-          />}
-        </div>
+            template={result.template}
+            campaign={{
+              id: result.campaignId,
+              businessName: result.businessName,
+              product: result.product,
+              campaignName: result.campaignName,
+              referenceCode: "CLIENT",
+              driveClientFolder: "",
+              driveCampaignFolder: "",
+            }}
+          />
+        ) : (
+          <ClientSetupForm campaignId={result.campaignId} campaignName={result.campaignName} token={token} />
+        )}
       </div>
-    </div>
+    </FormPageShell>
   );
 }

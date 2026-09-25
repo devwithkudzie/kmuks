@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { StepShell } from "../StepShell";
 import { FieldWrapper, RadioField, TextAreaField } from "../fields";
-import { fieldClass, labelClass } from "../styles";
+import { fieldClass } from "../styles";
 import { productPricingSchema, type ProductPricingValues } from "@/lib/client-setup/schema";
 import { unitWordFor } from "@/lib/client-setup/constants";
 
@@ -53,7 +53,7 @@ export function ProductPricingStep({
         error={errors.priceAmount?.[0] ?? errors.priceQuantity?.[0]}
       >
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          <span className={`${labelClass} inline w-auto normal-case`}>$</span>
+          <span className="text-sm text-mist">$</span>
           <input
             value={values.priceAmount}
             onChange={(e) => update("priceAmount", e.target.value)}

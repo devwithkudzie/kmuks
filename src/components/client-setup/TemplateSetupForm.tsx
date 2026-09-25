@@ -3,11 +3,8 @@ import { useEffect, useState } from "react";
 import type { CampaignConfig } from "@/lib/client-setup/campaigns";
 import { contactSchema } from "@/lib/client-setup/schema";
 import {
-  fillTokens,
   formatAnswer,
   isFieldVisible,
-  priceParts,
-  unitFor,
   validateAnswers,
   type FormTemplate,
   type TemplateAnswers,
@@ -18,77 +15,13 @@ import { SetupChecklist, type StepStatus } from "./SetupChecklist";
 import { StepProgress } from "./StepProgress";
 import { StepShell } from "./StepShell";
 import { SubmissionSuccess } from "./SubmissionSuccess";
-import { CheckboxListField, FieldWrapper, RadioField, SelectField, TextAreaField, TextField } from "./fields";
-import { fieldClass, focusRing, labelClass } from "./styles";
+import { TextField } from "./fields";
+import { focusRing } from "./styles";
+import { TemplateFieldInput } from "./TemplateFields";
+import { markFormSubmitted, redirectIfSubmitted } from "./submitted";
 
 type Contact = { contactName: string; contactWhatsapp: string; customerWhatsapp: string; confirmed: boolean };
 const emptyContact: Contact = { contactName: "", contactWhatsapp: "", customerWhatsapp: "", confirmed: false };
-
-// fieldClass carries w-full and mt-2, which would override the compact price inputs' width.
-const compactFieldClass = fieldClass.replace(/\bw-full\b/, "").replace(/\bmt-2\b/, "");
-
-function PriceField({ field, value, product, error, onChange }: {
-  field: TemplateField;
-  value: string | string[] | undefined;
-  product: string;
-  error?: string;
-  onChange: (value: string[]) => void;
-}) {
-  const [amount, quantity] = priceParts(value);
-  const unit = unitFor(field, product);
-  return (
-    <FieldWrapper label={fillTokens(field.label, field, product)} required={field.required} hint={field.hint ? fillTokens(field.hint, field, product) : `e.g. $85 per 1,000 ${unit}`} error={error}>
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        <span className={`${labelClass} inline w-auto normal-case`}>$</span>
-        <input
-          aria-label={`${field.label} amount`}
-          inputMode="decimal"
-          maxLength={40}
-          value={amount}
-          onChange={(e) => onChange([e.target.value, quantity])}
-          placeholder="85"
-          className={`${compactFieldClass} w-24`}
-        />
-        <span className="text-sm text-mist">per</span>
-        <input
-          aria-label={`${field.label} quantity`}
-          maxLength={40}
-          value={quantity}
-          onChange={(e) => onChange([amount, e.target.value])}
-          placeholder="1,000"
-          className={`${compactFieldClass} w-24`}
-        />
-        <span className="text-sm text-mist">{unit}</span>
-      </div>
-    </FieldWrapper>
-  );
-}
-
-function QuantityField({ field, value, product, error, onChange }: {
-  field: TemplateField;
-  value: string | string[] | undefined;
-  product: string;
-  error?: string;
-  onChange: (value: string) => void;
-}) {
-  const label = fillTokens(field.label, field, product);
-  return (
-    <FieldWrapper label={label} required={field.required} hint={field.hint ? fillTokens(field.hint, field, product) : undefined} error={error}>
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        <input
-          aria-label={label}
-          inputMode="numeric"
-          maxLength={40}
-          value={typeof value === "string" ? value : ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={field.placeholder ? fillTokens(field.placeholder, field, product) : "1,000"}
-          className={`${compactFieldClass} w-28`}
-        />
-        <span className="text-sm text-mist">{unitFor(field, product)}</span>
-      </div>
-    </FieldWrapper>
-  );
-}
 
 export function TemplateSetupForm({ token, campaign, template }: { token: string; campaign: CampaignConfig; template: FormTemplate }) {
   const storageKey = `client-template:${token}`;
@@ -111,6 +44,7 @@ export function TemplateSetupForm({ token, campaign, template }: { token: string
   const [submissionId, setSubmissionId] = useState("");
 
   useEffect(() => {
+    if (redirectIfSubmitted(token)) return;
     let saved: { answers?: TemplateAnswers; contact?: Partial<Contact>; draftId?: unknown; step?: number; maxStepReached?: number } | null = null;
     try { saved = JSON.parse(localStorage.getItem(storageKey) ?? "null"); } catch { /* Storage may be unavailable. */ }
     const clamp = (value: unknown) => Math.min(Math.max(typeof value === "number" ? value : 1, 1), reviewStep);
@@ -122,7 +56,7 @@ export function TemplateSetupForm({ token, campaign, template }: { token: string
     setMaxStepReached(Math.max(clamp(saved?.maxStepReached), clamp(saved?.step)));
     setDraftId(typeof saved?.draftId === "string" ? saved.draftId : crypto.randomUUID());
     setHydrated(true);
-  }, [storageKey, reviewStep]);
+  }, [storageKey, reviewStep, token]);
 
   useEffect(() => {
     if (!hydrated || submissionId) return;
@@ -174,6 +108,7 @@ export function TemplateSetupForm({ token, campaign, template }: { token: string
         return;
       }
       setSubmissionId(body.submissionId);
+      markFormSubmitted(token);
       try { localStorage.removeItem(storageKey); } catch { /* Non-fatal. */ }
     } catch {
       setSubmitError("Could not reach the server. Your answers are still saved; please try again.");
@@ -193,36 +128,17 @@ export function TemplateSetupForm({ token, campaign, template }: { token: string
     return Object.keys(sectionErrors(sections[index], answers)).length ? "upcoming" : "completed";
   });
 
-  const renderField = (field: TemplateField) => {
-    if (!isFieldVisible(template, field, answers)) return null;
-    const product = campaign.product;
-    const common = {
-      label: fillTokens(field.label, field, product),
-      hint: field.hint ? fillTokens(field.hint, field, product) : undefined,
-      required: field.required,
-      error: errors[field.id],
-    };
-    const placeholder = field.placeholder ? fillTokens(field.placeholder, field, product) : undefined;
-    const value = answers[field.id];
-    const text = typeof value === "string" ? value : "";
-    const change = (next: string | string[]) => setAnswers((old) => ({ ...old, [field.id]: next }));
-    switch (field.type) {
-      case "price":
-        return <PriceField key={field.id} field={field} value={value} product={product} error={errors[field.id]} onChange={change} />;
-      case "quantity":
-        return <QuantityField key={field.id} field={field} value={value} product={product} error={errors[field.id]} onChange={change} />;
-      case "checkboxes":
-        return <CheckboxListField key={field.id} {...common} values={Array.isArray(value) ? value : []} options={field.options} onChange={change} />;
-      case "radio":
-        return <RadioField key={field.id} {...common} name={field.id} value={text} options={field.options.map((option) => ({ id: option, label: option }))} onChange={change} />;
-      case "select":
-        return <SelectField key={field.id} {...common} value={text} options={field.options} placeholder={placeholder} onChange={change} />;
-      case "textarea":
-        return <TextAreaField key={field.id} {...common} maxLength={4000} placeholder={placeholder} value={text} onChange={(e) => change(e.target.value)} />;
-      default:
-        return <TextField key={field.id} {...common} maxLength={4000} placeholder={placeholder} value={text} onChange={(e) => change(e.target.value)} />;
-    }
-  };
+  const renderField = (field: TemplateField) => (
+    <TemplateFieldInput
+      key={field.id}
+      template={template}
+      field={field}
+      answers={answers}
+      product={campaign.product}
+      error={errors[field.id]}
+      onChange={(next) => setAnswers((old) => ({ ...old, [field.id]: next }))}
+    />
+  );
 
   const updateContact = <K extends keyof Contact>(key: K, value: Contact[K]) => setContact((old) => ({ ...old, [key]: value }));
   const hasFieldErrors = Object.keys(errors).length > 0;

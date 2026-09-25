@@ -1,4 +1,4 @@
-import { listFormTemplates } from "@/lib/google/templates";
+import { BUILT_IN_TEMPLATES } from "@/lib/client-setup/templates";
 import type { Metadata } from "next";
 import { requireAdminOrRedirect } from "@/lib/admin/auth";
 import { AdminLinksManager } from "@/components/admin/AdminLinksManager";
@@ -13,23 +13,27 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminClientSetupPage() {
+export default async function AdminClientSetupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ create?: string }>;
+}) {
+  const { create } = await searchParams;
   // Independently verified here even though proxy.ts already protects this
   // route — sensitive admin pages should never rely on the gate alone.
   await requireAdminOrRedirect("/admin/client-setup");
 
   let links: Awaited<ReturnType<typeof listSetupLinkViews>> = [];
-  let templates: Awaited<ReturnType<typeof listFormTemplates>> = [];
   let configError: string | undefined;
 
   try {
-    [links, templates] = await Promise.all([listSetupLinkViews(), listFormTemplates()]);
+    links = await listSetupLinkViews();
   } catch (error) {
     console.error("[admin/client-setup] could not load setup links:", error);
     configError =
       error instanceof GoogleConfigError
         ? `Google Cloud isn't fully configured yet — ${error.message}.`
-        : "Couldn't load setup links right now. Check the server logs for details.";
+        : "Couldn't load your setup links from Google Sheets right now. This is usually a short Google rate limit; wait a minute and retry.";
   }
 
   return (
@@ -47,9 +51,19 @@ export default async function AdminClientSetupPage() {
       </header>
 
       {configError ? (
-        <p className="mt-8 rounded-md bg-purple/10 px-4 py-3 text-sm text-fog">{configError}</p>
+        <div role="alert" className="mt-8 rounded-md bg-purple/10 px-4 py-3 text-sm text-fog">
+          <p>{configError}</p>
+          <a href={`/admin/client-setup${create ? `?create=${encodeURIComponent(create)}` : ""}`} className="mt-3 inline-block font-medium text-purple">
+            Retry
+          </a>
+        </div>
       ) : (
-        <AdminLinksManager initialTemplates={templates} initialLinks={links} baseUrl={getSetupBaseUrl()} />
+        <AdminLinksManager
+          templates={BUILT_IN_TEMPLATES}
+          initialLinks={links}
+          baseUrl={getSetupBaseUrl()}
+          createTemplateId={BUILT_IN_TEMPLATES.some((template) => template.id === create) ? create : undefined}
+        />
       )}
     </main>
   );

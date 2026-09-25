@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LayoutDashboard, Link2, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { Inbox, LayoutDashboard, Link2, LogOut, Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import { signOutAction } from "@/app/admin/login/actions";
 import { focusRing } from "@/components/client-setup/styles";
 import { SIDEBAR_COOKIE } from "@/lib/admin/sidebar";
@@ -11,6 +11,7 @@ import { SIDEBAR_COOKIE } from "@/lib/admin/sidebar";
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/client-setup", label: "Client Setup Links", icon: Link2 },
+  { href: "/admin/responses", label: "Campaign Responses", icon: Inbox },
 ];
 
 function NavLinks({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
