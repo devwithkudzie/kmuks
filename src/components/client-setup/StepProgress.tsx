@@ -1,7 +1,6 @@
 import { CHECKLIST_STEPS } from "./SetupChecklist";
 
-export function StepProgress({ step }: { step: number }) {
-  const total = CHECKLIST_STEPS.length;
+export function StepProgress({ step, total = CHECKLIST_STEPS.length }: { step: number; total?: number }) {
 
   return (
     <div className="lg:hidden">

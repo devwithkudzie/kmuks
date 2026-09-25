@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { templateSchema, type FormTemplate } from "./templates";
+import { parseStoredTemplate, type FormTemplate } from "./templates";
 import { getCampaignConfig } from "./campaigns";
 import { generateSetupToken } from "./tokens";
 import {
@@ -154,7 +154,7 @@ export async function resolveSetupLinkForClient(token: string): Promise<{
     campaignName: existing.link.campaignName.trim() || campaign.campaignName,
     businessName: existing.link.businessName,
     product: existing.link.product,
-    template: existing.link.templateJson ? templateSchema.parse(JSON.parse(existing.link.templateJson)) : null,
+    template: existing.link.templateJson ? parseStoredTemplate(existing.link.templateJson) : null,
   };
 }
 

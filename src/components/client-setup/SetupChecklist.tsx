@@ -15,9 +15,11 @@ export const CHECKLIST_STEPS = [
 export function SetupChecklist({
   statuses,
   onSelectStep,
+  steps = CHECKLIST_STEPS,
 }: {
   statuses: StepStatus[];
   onSelectStep: (step: number) => void;
+  steps?: readonly string[];
 }) {
   const completedCount = statuses.filter((status) => status === "completed").length;
 
@@ -27,7 +29,7 @@ export function SetupChecklist({
         Setup Checklist
       </p>
       <ol className="mt-4 space-y-1">
-        {CHECKLIST_STEPS.map((label, index) => {
+        {steps.map((label, index) => {
           const status = statuses[index];
           const stepNumber = index + 1;
           const clickable = status === "completed";
@@ -72,7 +74,7 @@ export function SetupChecklist({
         })}
       </ol>
       <p className="mt-4 px-2 text-xs text-mist/60">
-        {completedCount} of {CHECKLIST_STEPS.length} completed
+        {completedCount} of {steps.length} completed
       </p>
     </nav>
   );
