@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, type MouseEvent, type RefObject } f
 import { ArrowRight } from "lucide-react";
 import { site } from "@/lib/site";
 import { WhatsAppButton } from "@/components/WhatsAppIntake";
+import { Logo } from "@/components/Logo";
 
 const links = [
   { href: "#methodology", label: "How it works" },
@@ -49,9 +50,9 @@ function MobileMenu({
         <a
           href="#home"
           onClick={(event) => onGoTo("#home", event)}
-          className={`font-script text-[1.7rem] leading-none text-fog ${focus}`}
+          className={`inline-flex ${focus}`}
         >
-          Kudzie Muks
+          <Logo className="h-5" />
         </a>
         <button
           type="button"
@@ -246,9 +247,9 @@ export function Header() {
         <div className="relative flex items-center justify-center px-5 py-3.5 sm:py-4">
           <a
             href="#home"
-            className={`font-script text-[2.45rem] leading-none text-fog sm:text-[2.85rem] ${focus}`}
+            className={`inline-flex py-1.5 ${focus}`}
           >
-            Kudzie Muks
+            <Logo className="h-7 sm:h-8" preload />
           </a>
         </div>
       </div>
@@ -263,9 +264,9 @@ export function Header() {
             <a
               href="#home"
               onClick={close}
-              className={`font-script text-[1.55rem] leading-none text-fog sm:text-[1.75rem] ${focus}`}
+              className={`inline-flex ${focus}`}
             >
-              Kudzie Muks
+              <Logo className="h-5 md:h-4 lg:h-5" />
             </a>
           )}
         </div>

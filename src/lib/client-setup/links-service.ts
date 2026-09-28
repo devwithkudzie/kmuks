@@ -50,7 +50,7 @@ function withDerivedStatus(link: SetupLinkRow): SetupLinkView {
 }
 
 export async function listSetupLinkViews(): Promise<SetupLinkView[]> {
-  await ensureSetupLinksHeaderExists();
+  // Read only — the header is ensured when a link is created, not on every page load.
   const links = await listSetupLinks();
   return links.map(withDerivedStatus).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }

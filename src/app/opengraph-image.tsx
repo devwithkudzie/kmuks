@@ -1,9 +1,14 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { site } from "@/lib/site";
 
 export const alt = site.title;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+// The wordmark is 799×115; shown at 44px tall.
+const logo = `data:image/png;base64,${(await readFile(join(process.cwd(), "public/kudziemuks-logo.png"))).toString("base64")}`;
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -21,16 +26,7 @@ export default function OpenGraphImage() {
           fontFamily: "Inter, Helvetica, sans-serif",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            fontSize: 22,
-            letterSpacing: 10,
-            color: "#A78BFA",
-          }}
-        >
-          KUDZIEMUKS
-        </div>
+        <img src={logo} alt="kudziemuks" width={306} height={44} />
         <div style={{ display: "flex", flexDirection: "column", maxWidth: 980 }}>
           <div style={{ fontSize: 58, lineHeight: 1.1, fontWeight: 800 }}>
             expertise alone isn’t enough.

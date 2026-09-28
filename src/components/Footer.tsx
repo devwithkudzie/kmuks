@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
 import { WhatsAppButton } from "@/components/WhatsAppIntake";
+import { Logo } from "@/components/Logo";
 
 export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-canvas pb-24 text-mist sm:pb-0">
       <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-8 px-5 py-10 sm:flex-row sm:items-center sm:px-8">
-        <p className="font-script text-2xl text-fog">Kudzie Muks</p>
+        <Logo className="h-6" />
 
         <div className="flex flex-wrap gap-6 text-sm">
           <Link href="/insights" className="transition hover:text-fog">

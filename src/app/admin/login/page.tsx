@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./LoginForm";
+import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = {
   title: "Admin Login",
@@ -20,7 +21,7 @@ export default async function AdminLoginPage({
 
   return (
     <div className="mx-auto flex min-h-full max-w-sm flex-col justify-center px-5 py-24">
-      <p className="font-script text-2xl text-fog">Kudziemuks</p>
+      <Logo className="h-7 self-start" preload />
       <h1 className="mt-6 text-2xl font-bold tracking-tight text-fog">Admin Access</h1>
       <LoginForm next={safeNext} />
     </div>

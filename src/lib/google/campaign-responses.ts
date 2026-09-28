@@ -1,6 +1,6 @@
-import type { FormTemplate } from "@/lib/client-setup/templates";
+import { BUILT_IN_TEMPLATES, type FormTemplate } from "@/lib/client-setup/templates";
 import { getClientSetupSpreadsheetId } from "./auth";
-import { appendRowByHeader, sheetsClient } from "./sheets";
+import { appendRowByHeader, isMissingTabError, sheetsClient } from "./sheets";
 
 export const RESPONSE_BASE_COLUMNS = [
   "Submission ID",
@@ -30,27 +30,44 @@ export async function appendCampaignResponse(template: FormTemplate, values: Rec
 
 export type CampaignResponses = { tab: string; campaign: string; header: string[]; rows: Record<string, string>[] };
 
-/** Read only: every "Responses - …" tab, newest responses first. */
-export async function listCampaignResponses(): Promise<CampaignResponses[]> {
+/** One tab as header + rows, or null if the tab doesn't exist yet. */
+async function readResponsesTab(tab: string): Promise<{ header: string[]; rows: Record<string, string>[] } | null> {
   const sheets = sheetsClient();
   const spreadsheetId = getClientSetupSpreadsheetId();
-  const metadata = await sheets.spreadsheets.get({ spreadsheetId, fields: "sheets.properties.title" });
-  const tabs = (metadata.data.sheets ?? [])
-    .map((sheet) => sheet.properties?.title ?? "")
-    .filter((title) => title.startsWith("Responses - "));
-  if (!tabs.length) return [];
+  let values: string[][];
+  try {
+    const result = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'${tab}'` });
+    values = (result.data.values ?? []) as string[][];
+  } catch (error) {
+    if (isMissingTabError(error)) return null;
+    throw error;
+  }
+  const [header = [], ...rows] = values;
+  return {
+    header,
+    rows: rows
+      .filter((row) => row.some(Boolean))
+      .map((row) => Object.fromEntries(header.map((column, i) => [column, String(row[i] ?? "")])))
+      .sort((a, b) => (Date.parse(b["Submitted At"]) || 0) - (Date.parse(a["Submitted At"]) || 0)),
+  };
+}
 
-  const result = await sheets.spreadsheets.values.batchGet({ spreadsheetId, ranges: tabs.map((tab) => `'${tab}'`) });
-  return tabs.map((tab, index) => {
-    const [header = [], ...rows] = (result.data.valueRanges?.[index]?.values ?? []) as string[][];
-    return {
-      tab,
-      campaign: tab.replace(/^Responses - /, ""),
-      header,
-      rows: rows
-        .filter((row) => row.some(Boolean))
-        .map((row) => Object.fromEntries(header.map((column, i) => [column, String(row[i] ?? "")])))
-        .sort((a, b) => (Date.parse(b["Submitted At"]) || 0) - (Date.parse(a["Submitted At"]) || 0)),
-    };
+/**
+ * Read only: responses for every public campaign template, newest first.
+ * Templates live in code, so tab names are known up front and all tabs are
+ * read in parallel — one round trip instead of a lookup followed by a read.
+ */
+export async function listCampaignResponses(): Promise<CampaignResponses[]> {
+  const templates = BUILT_IN_TEMPLATES.filter((template) => template.kind === "public");
+  const tabs = await Promise.all(templates.map((template) => readResponsesTab(responsesTabName(template))));
+  return templates.flatMap((template, index) => {
+    const tab = tabs[index];
+    return tab ? [{ tab: responsesTabName(template), campaign: template.name, ...tab }] : [];
   });
+}
+
+/** Read only: one template's responses in a single sheet read; empty if the tab doesn't exist yet. */
+export async function getCampaignResponses(template: FormTemplate): Promise<Record<string, string>[]> {
+  const tab = await readResponsesTab(responsesTabName(template));
+  return tab?.rows ?? [];
 }

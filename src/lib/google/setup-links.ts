@@ -1,5 +1,5 @@
 import { getClientSetupSpreadsheetId } from "./auth";
-import { ensureSheetTabExists, sheetsClient } from "./sheets";
+import { ensureSheetTabExists, isMissingTabError, sheetsClient } from "./sheets";
 
 const SHEET_NAME = "Client Setup Links";
 
@@ -110,12 +110,17 @@ export async function listSetupLinks(): Promise<SetupLinkRow[]> {
   const sheets = sheetsClient();
   const spreadsheetId = getClientSetupSpreadsheetId();
 
-  const result = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range: `${SHEET_NAME}!A2:L`,
-  });
-
-  return (result.data.values ?? []).map((row) => rowToLink(row as string[]));
+  try {
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `'${SHEET_NAME}'!A2:L`,
+    });
+    return (result.data.values ?? []).map((row) => rowToLink(row as string[]));
+  } catch (error) {
+    // No links tab yet: it's created (with its header) when the first link is made.
+    if (isMissingTabError(error)) return [];
+    throw error;
+  }
 }
 
 export async function getSetupLinkByToken(token: string): Promise<{

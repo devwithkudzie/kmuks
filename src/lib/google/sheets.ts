@@ -43,11 +43,21 @@ export function sheetsClient() {
  * one — a fresh spreadsheet only has a default "Sheet1", so the first real
  * write would otherwise fail with a "Unable to parse range" error.
  */
+/**
+ * Reading a tab that doesn't exist fails with a 400 "Unable to parse range".
+ * Read paths treat that as "no data yet" instead of paying for a separate
+ * metadata lookup first — each Google round trip adds noticeable latency.
+ */
+export function isMissingTabError(error: unknown): boolean {
+  const { code, message } = error as { code?: number; message?: string };
+  return code === 400 && /unable to parse range/i.test(message ?? "");
+}
+
 export async function ensureSheetTabExists(sheetName: string): Promise<void> {
   const sheets = sheetsClient();
   const spreadsheetId = getClientSetupSpreadsheetId();
 
-  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId, fields: "sheets.properties.title" });
   const tabExists = spreadsheet.data.sheets?.some(
     (sheet) => sheet.properties?.title === sheetName,
   );
@@ -117,19 +127,19 @@ export type SubmissionRecord = Record<(typeof SUBMISSION_COLUMNS)[number], strin
 export async function listSubmissions(): Promise<SubmissionRecord[]> {
   const sheets = sheetsClient();
   const spreadsheetId = getClientSetupSpreadsheetId();
-  const spreadsheet = await sheets.spreadsheets.get({
-    spreadsheetId,
-    fields: "sheets.properties.title",
-  });
-  if (!spreadsheet.data.sheets?.some((sheet) => sheet.properties?.title === SHEET_NAME)) {
-    return [];
+  let values: string[][];
+  try {
+    const result = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `'${SHEET_NAME}'!A:AB`,
+      valueRenderOption: "FORMATTED_VALUE",
+    });
+    values = (result.data.values ?? []) as string[][];
+  } catch (error) {
+    if (isMissingTabError(error)) return [];
+    throw error;
   }
-  const result = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range: `'${SHEET_NAME}'!A:AB`,
-    valueRenderOption: "FORMATTED_VALUE",
-  });
-  const [headers = [], ...rows] = result.data.values ?? [];
+  const [headers = [], ...rows] = values;
   const indexes = SUBMISSION_COLUMNS.map((column) => headers.indexOf(column));
   if (indexes.some((index) => index === -1)) {
     throw new Error("Client Submissions sheet headers do not match the expected columns.");

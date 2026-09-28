@@ -1,20 +1,13 @@
 import type { Metadata } from "next";
-import { Great_Vibes, Inter, Newsreader } from "next/font/google";
+import { Inter, Newsreader } from "next/font/google";
 import { GoogleTag } from "@/components/GoogleTag";
 import { LinkedInInsight } from "@/components/LinkedInInsight";
-import { site } from "@/lib/site";
+import { PRODUCTION_SITE_URL, site } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-  display: "swap",
-});
-
-const signature = Great_Vibes({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-signature",
   display: "swap",
 });
 
@@ -24,7 +17,7 @@ const news = Newsreader({
   display: "swap",
 });
 
-const fallbackSiteUrl = "https://kudziemuks.com";
+const fallbackSiteUrl = PRODUCTION_SITE_URL;
 
 function absoluteUrl(value: string) {
   try {
@@ -100,7 +93,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${signature.variable} ${news.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${news.variable} h-full antialiased`}>
       <body className="min-h-full bg-white font-sans text-canvas">
         <a
           href="#home"

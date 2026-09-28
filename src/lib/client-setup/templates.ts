@@ -45,6 +45,9 @@ export const templateSchema = z.object({
   // "setup": one client fills in their link once, with contact + review steps.
   // "public": one shareable link, many people apply on a single page.
   kind: z.enum(["setup", "public"]).default("setup"),
+  // Public campaigns only: a fixed page on the site (e.g. "/free-website") that
+  // takes applications without a generated link. Links keep working alongside it.
+  publicPath: z.string().regex(/^\/[a-z0-9-]+$/).optional(),
   copy: copySchema.default({ heading: "", intro: "", submitLabel: "", successHeading: "", successBody: "" }),
   fields: z.array(fieldSchema).min(1).max(60),
 }).superRefine((template, ctx) => {
@@ -236,6 +239,7 @@ export const FREE_WEBSITE_TEMPLATE: FormTemplate = {
   name: "Free Website Campaign",
   description: "Public promo: local businesses apply for a free website. One link, many applications.",
   kind: "public",
+  publicPath: "/free-website",
   copy: {
     heading: "Get a Free Website for Your Business",
     intro: "I'm looking for 2 local businesses to build a website for free this week. I'm putting together a few local examples and would love your honest feedback in return.\n\nInterested? Complete the short form below.",

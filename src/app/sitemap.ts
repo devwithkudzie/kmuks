@@ -16,6 +16,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.7,
     },
+    {
+      url: `${site.siteUrl}/free-website`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
     ...insights.map((insight) => ({
       url: `${site.siteUrl}/insights/${insight.slug}`,
       lastModified: new Date(insight.date),

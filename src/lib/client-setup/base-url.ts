@@ -1,10 +1,12 @@
+import { PRODUCTION_SITE_URL } from "@/lib/site";
+
 export function getSetupBaseUrl() {
   const deployed = process.env.VERCEL === "1";
   const candidates = [
     process.env.NEXT_PUBLIC_SITE_URL,
     process.env.VERCEL_PROJECT_PRODUCTION_URL,
     process.env.VERCEL_URL,
-    "https://kudziemuks.com",
+    PRODUCTION_SITE_URL,
   ];
 
   for (const candidate of candidates) {
@@ -21,5 +23,5 @@ export function getSetupBaseUrl() {
       continue;
     }
   }
-  return "https://kudziemuks.com";
+  return PRODUCTION_SITE_URL;
 }

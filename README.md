@@ -72,7 +72,7 @@ Setup:
 3. In WhatsApp Manager, create a message template, category **Utility**, named e.g. `new_lead_alert`, language English, with this body, and wait for approval:
 
    ```
-   New lead from kudziemuks.com
+   New lead from kudziemuks.co.zw
    Name: {{1}}
    Business: {{2}}
    WhatsApp: {{3}}

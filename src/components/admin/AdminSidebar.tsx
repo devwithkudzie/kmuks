@@ -7,6 +7,16 @@ import { Inbox, LayoutDashboard, Link2, LogOut, Menu, PanelLeftClose, PanelLeftO
 import { signOutAction } from "@/app/admin/login/actions";
 import { focusRing } from "@/components/client-setup/styles";
 import { SIDEBAR_COOKIE } from "@/lib/admin/sidebar";
+import { Logo } from "@/components/Logo";
+
+function AdminBrand() {
+  return (
+    <span className="inline-flex items-center gap-2">
+      <Logo className="h-5" />
+      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[0.65rem] font-medium tracking-wide text-mist uppercase">Admin</span>
+    </span>
+  );
+}
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -73,7 +83,7 @@ export function AdminSidebar({ initialCollapsed }: { initialCollapsed: boolean }
     <>
       {/* Mobile: top bar with a drawer */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-night px-4 py-3 md:hidden">
-        <span className="text-sm font-semibold tracking-wide">Kudzie Muks Admin</span>
+        <AdminBrand />
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
@@ -94,7 +104,7 @@ export function AdminSidebar({ initialCollapsed }: { initialCollapsed: boolean }
           />
           <nav aria-label="Admin navigation" className="relative flex h-full w-64 flex-col bg-night p-4">
             <div className="mb-6 flex items-center justify-between">
-              <span className="text-sm font-semibold tracking-wide">Kudzie Muks Admin</span>
+              <AdminBrand />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
@@ -120,7 +130,7 @@ export function AdminSidebar({ initialCollapsed }: { initialCollapsed: boolean }
         }`}
       >
         <div className={`mb-6 flex items-center ${collapsed ? "justify-center" : "justify-between pl-3"}`}>
-          {collapsed ? null : <span className="text-sm font-semibold tracking-wide">Kudzie Muks Admin</span>}
+          {collapsed ? null : <AdminBrand />}
           <button
             type="button"
             onClick={toggleCollapsed}

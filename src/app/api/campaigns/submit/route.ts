@@ -2,7 +2,15 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { NextResponse } from "next/server";
 import { deriveStatus } from "@/lib/client-setup/links-service";
-import { formatAnswer, isFieldVisible, parseStoredTemplate, validateAnswers } from "@/lib/client-setup/templates";
+import {
+  BUILT_IN_TEMPLATES,
+  formatAnswer,
+  isFieldVisible,
+  parseStoredTemplate,
+  validateAnswers,
+  type FormTemplate,
+} from "@/lib/client-setup/templates";
+import { site } from "@/lib/site";
 import { appendCampaignResponse, responseColumnFor } from "@/lib/google/campaign-responses";
 import { getSetupLinkByToken } from "@/lib/google/setup-links";
 import { checkRateLimit, clientIpFrom } from "@/lib/rate-limit";
@@ -11,7 +19,9 @@ export const runtime = "nodejs";
 
 const utmValue = z.string().trim().max(200).optional().default("");
 const submissionSchema = z.object({
-  token: z.string().min(1).max(200),
+  // A generated campaign link, or a template with its own public page (e.g. /free-website).
+  token: z.string().min(1).max(200).optional(),
+  templateId: z.string().min(1).max(80).optional(),
   answers: z.unknown(),
   utm: z.object({ source: utmValue, medium: utmValue, campaign: utmValue, content: utmValue }).default({
     source: "", medium: "", campaign: "", content: "",
@@ -32,12 +42,25 @@ export async function POST(request: Request) {
   if (data.website) return NextResponse.json({ submissionId });
 
   try {
-    const existing = await getSetupLinkByToken(data.token);
-    if (!existing || ["Disabled", "Expired"].includes(deriveStatus(existing.link))) {
-      return NextResponse.json({ error: "This campaign is no longer accepting applications." }, { status: 403 });
+    let template: FormTemplate | null = null;
+    let campaign = "";
+    let organization = "";
+    let product = "";
+    if (data.token) {
+      const existing = await getSetupLinkByToken(data.token);
+      if (!existing || ["Disabled", "Expired"].includes(deriveStatus(existing.link))) {
+        return NextResponse.json({ error: "This campaign is no longer accepting applications." }, { status: 403 });
+      }
+      const link = existing.link;
+      template = link.templateJson ? parseStoredTemplate(link.templateJson) : null;
+      campaign = link.campaignName;
+      organization = link.businessName;
+      product = link.product;
+    } else if (data.templateId) {
+      template = BUILT_IN_TEMPLATES.find((item) => item.id === data.templateId && item.publicPath) ?? null;
+      campaign = template?.name ?? "";
+      organization = site.handle;
     }
-    const link = existing.link;
-    const template = link.templateJson ? parseStoredTemplate(link.templateJson) : null;
     if (!template || template.kind !== "public") {
       return NextResponse.json({ error: "This link isn't a public campaign." }, { status: 400 });
     }
@@ -49,8 +72,8 @@ export async function POST(request: Request) {
     const values: Record<string, string> = {
       "Submission ID": submissionId,
       "Submitted At": new Date().toISOString(),
-      Campaign: link.campaignName,
-      Organization: link.businessName,
+      Campaign: campaign,
+      Organization: organization,
       "UTM Source": data.utm.source,
       "UTM Medium": data.utm.medium,
       "UTM Campaign": data.utm.campaign,
@@ -59,7 +82,7 @@ export async function POST(request: Request) {
     };
     for (const field of template.fields) {
       if (!isFieldVisible(template, field, checked.answers)) continue;
-      values[responseColumnFor(field)] = formatAnswer(field, checked.answers[field.id], link.product);
+      values[responseColumnFor(field)] = formatAnswer(field, checked.answers[field.id], product);
     }
     await appendCampaignResponse(template, values);
     return NextResponse.json({ submissionId });

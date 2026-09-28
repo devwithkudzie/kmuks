@@ -2,7 +2,6 @@
 
 @theme inline {
   --font-sans: var(--font-inter);
-  --font-script: var(--font-signature);
   --font-serif: var(--font-news);
   --color-canvas: #0f0f11;
   --color-paper: #f3f1eb;

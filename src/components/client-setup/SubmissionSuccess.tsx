@@ -45,7 +45,7 @@ export function SubmissionSuccess({
           href="/"
           className="inline-flex min-h-12 items-center justify-center rounded-md border border-white/10 px-6 text-sm font-medium text-fog transition hover:border-white/25"
         >
-          Visit kudziemuks.com →
+          Visit {site.domain} →
         </Link>
       </div>
     </div>

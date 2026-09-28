@@ -11,12 +11,14 @@ import { markFormSubmitted, redirectIfSubmitted } from "./submitted";
 export type Utm = { source: string; medium: string; campaign: string; content: string };
 
 export function PublicCampaignForm({ token, template, product, utm }: {
-  token: string;
+  /** A generated campaign link; omit on the template's own public page (e.g. /free-website). */
+  token?: string;
   template: FormTemplate;
   product: string;
   utm: Utm;
 }) {
   const { copy } = template;
+  const submittedKey = token ?? `page:${template.id}`;
   const [answers, setAnswers] = useState<TemplateAnswers>({});
   const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -28,8 +30,8 @@ export function PublicCampaignForm({ token, template, product, utm }: {
   useEffect(() => {
     // sessionStorage only exists after mount; show the form unless this tab already applied.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (!redirectIfSubmitted(token)) setReady(true);
-  }, [token]);
+    if (!redirectIfSubmitted(submittedKey)) setReady(true);
+  }, [submittedKey]);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -45,7 +47,7 @@ export function PublicCampaignForm({ token, template, product, utm }: {
       const response = await fetch("/api/campaigns/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, answers, utm, website }),
+        body: JSON.stringify({ ...(token ? { token } : { templateId: template.id }), answers, utm, website }),
       });
       const body = await response.json();
       if (!response.ok) {
@@ -53,7 +55,7 @@ export function PublicCampaignForm({ token, template, product, utm }: {
         setFormError(body.error ?? "Could not send your application. Please try again.");
         return;
       }
-      markFormSubmitted(token);
+      markFormSubmitted(submittedKey);
       setDone(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -87,7 +89,7 @@ export function PublicCampaignForm({ token, template, product, utm }: {
             href="/"
             className={`mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-purple px-6 text-base font-semibold text-white transition hover:bg-violet sm:w-auto ${focusRing}`}
           >
-            Visit kudziemuks.com →
+            Visit {site.domain} →
           </Link>
         </div>
       </div>

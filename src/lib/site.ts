@@ -1,9 +1,12 @@
+/** The live site. Used when no site URL is configured, and for the domain shown to visitors. */
+export const PRODUCTION_SITE_URL = "https://www.kudziemuks.co.zw";
+
 function resolveSiteUrl() {
   const candidates = [
     process.env.NEXT_PUBLIC_SITE_URL,
     process.env.VERCEL_PROJECT_PRODUCTION_URL,
     process.env.VERCEL_URL,
-    "https://kudziemuks.com",
+    PRODUCTION_SITE_URL,
   ];
 
   for (const value of candidates) {
@@ -20,7 +23,7 @@ function resolveSiteUrl() {
     }
   }
 
-  return "https://kudziemuks.com";
+  return PRODUCTION_SITE_URL;
 }
 
 export const site = {
@@ -32,12 +35,13 @@ export const site = {
     "Kudzai Mukungurutse",
     "Prosper Mukungurutse",
     "Kudzie",
+    "Kudzi",
     "Kudzai",
     "Kudziemuks",
     "Kudzie Muks",
   ],
   title:
-    "Kudzaishe Prosper Mukungurutse (Kudziemuks) — marketing that brings you customers",
+    "Kudzaishe Prosper Mukungurutse (Kudziemuks) — Marketing that brings you customers",
   description:
     "Kudzaishe Prosper Mukungurutse — known as Kudzie or Kudzai — helps SMEs find the right message, create content around it, and turn attention into customers.",
   linkedinUrl: "https://www.linkedin.com/in/kmuks",
@@ -53,6 +57,8 @@ export const site = {
     "",
   ),
   siteUrl: resolveSiteUrl(),
+  /** Shown in copy ("Visit kudziemuks.co.zw"); fixed so local previews don't say "localhost". */
+  domain: new URL(PRODUCTION_SITE_URL).hostname.replace(/^www\./, ""),
 } as const;
 
 export type SocialProfile = {
@@ -70,7 +76,7 @@ export type WhatsAppAnswers = {
 export function whatsappHref(source = "landing-page", answers?: WhatsAppAnswers) {
   if (!answers) {
     return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(
-      `Hi Kudziemuks — lead from ${source} on kudziemuks.com. I want a Free Customer Growth Review.`,
+      `Hi Kudziemuks — lead from ${source} on ${site.domain}. I want a Free Customer Growth Review.`,
     )}`;
   }
 
@@ -88,7 +94,7 @@ export function whatsappHref(source = "landing-page", answers?: WhatsAppAnswers)
     "*Online presence:*",
     ...(onlineLines.length ? onlineLines : ["Not specified"]),
     "",
-    `_Submitted from ${source} on kudziemuks.com_`,
+    `_Submitted from ${source} on ${site.domain}_`,
   ].join("\n");
 
   return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(text)}`;

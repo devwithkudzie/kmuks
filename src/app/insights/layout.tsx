@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { WhatsAppIntakeProvider } from "@/components/WhatsAppIntake";
+import { Logo } from "@/components/Logo";
 
 export default function InsightsLayout({ children }: { children: ReactNode }) {
   return (
@@ -16,9 +17,9 @@ export default function InsightsLayout({ children }: { children: ReactNode }) {
           <div className="relative flex items-center justify-center px-5 py-3.5 sm:py-4">
             <Link
               href="/"
-              className="font-script text-[2.45rem] leading-none text-fog sm:text-[2.85rem]"
+              className="inline-flex py-1.5"
             >
-              Kudzie Muks
+              <Logo className="h-7 sm:h-8" preload />
             </Link>
           </div>
         </div>

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { requireAdminOrRedirect } from "@/lib/admin/auth";
 import { listSubmissions, SUBMISSION_COLUMNS, type SubmissionRecord } from "@/lib/google/sheets";
 import { focusRing } from "@/components/client-setup/styles";
+import Link from "next/link";
+import { FREE_WEBSITE_TEMPLATE } from "@/lib/client-setup/templates";
+import { getCampaignResponses } from "@/lib/google/campaign-responses";
 
 export const metadata: Metadata = { title: "Admin · Dashboard" };
 export const dynamic = "force-dynamic";
@@ -56,11 +59,22 @@ export default async function AdminDashboardPage({
   const { organization = "", campaign = "" } = await searchParams;
   let records: Awaited<ReturnType<typeof listSubmissions>> = [];
   let failed = false;
-  try {
-    records = await listSubmissions();
-  } catch (error) {
-    console.error("[admin] could not load submissions:", error);
+  let freeWebsiteApplications: Awaited<ReturnType<typeof getCampaignResponses>> = [];
+  let campaignFailed = false;
+  // Loaded side by side; either section can fail without hiding the other.
+  const [submissionsResult, campaignResult] = await Promise.allSettled([
+    listSubmissions(),
+    getCampaignResponses(FREE_WEBSITE_TEMPLATE),
+  ]);
+  if (submissionsResult.status === "fulfilled") records = submissionsResult.value;
+  else {
+    console.error("[admin] could not load submissions:", submissionsResult.reason);
     failed = true;
+  }
+  if (campaignResult.status === "fulfilled") freeWebsiteApplications = campaignResult.value;
+  else {
+    console.error("[admin] could not load Free Website Campaign responses:", campaignResult.reason);
+    campaignFailed = true;
   }
   const organizations = [...new Set(records.map((record) => record["Business Name"]).filter(Boolean))].sort();
   const campaigns = [...new Set(records
@@ -81,17 +95,36 @@ export default async function AdminDashboardPage({
         <div>
           <p className="text-xs font-medium tracking-[0.24em] text-purple uppercase">Admin</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="mt-3 text-sm text-mist">Current client details from your submissions sheet.</p>
+          <p className="mt-3 text-sm text-mist">Campaign applications and client details from your Google Sheet.</p>
         </div>
       </header>
+      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
+          <p className="text-sm text-mist">Free Website applications</p>
+          <p className="mt-3 text-3xl font-semibold tabular-nums">{campaignFailed ? "—" : freeWebsiteApplications.length}</p>
+          {campaignFailed ? (
+            <a href="/admin" className={`mt-3 inline-block text-sm text-purple-300 hover:text-fog ${focusRing}`}>
+              Couldn’t load — retry
+            </a>
+          ) : (
+            <Link
+              href={`/admin/responses?campaign=${encodeURIComponent(FREE_WEBSITE_TEMPLATE.name)}`}
+              className={`mt-3 inline-block text-sm text-purple-300 hover:text-fog ${focusRing}`}
+            >
+              View applications →
+            </Link>
+          )}
+        </div>
+      </div>
+      <h2 className="mt-12 text-xl font-semibold">Client setup</h2>
       {failed ? (
-        <div role="alert" className="mt-8 rounded-xl border border-purple/30 bg-purple/10 p-6">
+        <div role="alert" className="mt-6 rounded-xl border border-purple/30 bg-purple/10 p-6">
           <p>Couldn’t load the submissions sheet. Check the Google Sheets connection and try again.</p>
           <a href="/admin" className={`mt-4 inline-block text-sm text-purple ${focusRing}`}>Retry</a>
         </div>
       ) : (
         <>
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {stats.map(([label, count]) => (
               <div key={label} className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
                 <p className="text-sm text-mist">{label}</p>
