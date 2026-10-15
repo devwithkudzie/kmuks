@@ -108,10 +108,10 @@ export function StartProjectForm({ solutions, initialSolution }: { solutions: Op
           Thank you for sharing the details. I&rsquo;ll review your enquiry and follow up about the next steps.
         </p>
         <Link
-          href="/projects"
+          href="/case-studies"
           className={`mt-8 inline-flex min-h-12 items-center justify-center rounded-lg bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet ${focusRing}`}
         >
-          Explore my projects
+          See case studies
         </Link>
       </div>
     );

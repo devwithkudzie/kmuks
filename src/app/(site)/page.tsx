@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Bot, ChartColumn, CircleCheck, Magnet, Plug } from "lucide-react";
 import heroPhoto from "../../../public/hero.jpg";
-import { ProjectCard, SolutionCard } from "@/components/site/cards";
+import { CaseStudyCard, SolutionCard } from "@/components/site/cards";
 import { CallToAction, Eyebrow, PrimaryButton, SecondaryButton, Section, SectionHeading, TextLink } from "@/components/site/ui";
 import { ClientTestimonials, LatestInsights, WhyKudziemuks } from "@/components/site/home";
 import { HowIWork } from "@/components/site/HowIWork";
-import { projects, solutions } from "@/lib/content";
+import { solutions } from "@/lib/content";
+import { featuredCaseStudies } from "@/content/case-studies";
 import { getInsights } from "@/lib/insights";
 
 export const metadata: Metadata = {
@@ -90,7 +91,7 @@ export default function Home() {
             </p>
             <div className="animate-fade-up mt-9 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "0.3s" }}>
               <PrimaryButton href="/start-a-project">Discuss a Project</PrimaryButton>
-              <SecondaryButton href="/projects">Explore My Work</SecondaryButton>
+              <SecondaryButton href="/case-studies">See Case Studies</SecondaryButton>
             </div>
           </div>
           <div className="animate-fade-up" style={{ animationDelay: "0.25s" }}>
@@ -100,9 +101,13 @@ export default function Home() {
       </section>
 
       <section aria-label="What I help with" className="border-b border-line bg-canvas">
-        <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-y-8 px-5 py-10 sm:px-8 lg:grid-cols-4 lg:divide-x lg:divide-line lg:py-12">
+        {/* Phones: a swipeable row that snaps item by item. Large screens: four columns. */}
+        <ul className="hero-rail-scroll mx-auto flex max-w-6xl snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-5 px-5 py-8 sm:scroll-px-8 sm:px-8 lg:grid lg:grid-cols-4 lg:gap-0 lg:divide-x lg:divide-line lg:overflow-visible lg:py-12">
           {capabilities.map(({ icon: Icon, title, body }) => (
-            <li key={title} className="flex items-center gap-4 lg:justify-center lg:px-6">
+            <li
+              key={title}
+              className="flex w-[70%] shrink-0 snap-start items-center gap-4 rounded-2xl border border-line bg-night px-4 py-4 sm:w-[42%] lg:w-auto lg:justify-center lg:rounded-none lg:border-0 lg:bg-transparent lg:px-6 lg:py-0"
+            >
               <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-purple/10">
                 <Icon aria-hidden className="size-6 text-accent" />
               </span>
@@ -135,14 +140,14 @@ export default function Home() {
 
       <Section>
         <SectionHeading
-          eyebrow="Projects"
+          eyebrow="Case studies"
           title="Engineering real business capabilities."
-          intro="Real systems and clearly labelled concepts — showing how I approach business problems with software."
-          action={<TextLink href="/projects">View all projects</TextLink>}
+          intro="Professional work and my own products — the problem, how I solved it and how it's built."
+          action={<TextLink href="/case-studies">View all case studies</TextLink>}
         />
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {projects.slice(0, 3).map((project) => (
-            <ProjectCard key={project.slug} project={project} />
+          {featuredCaseStudies().map((study) => (
+            <CaseStudyCard key={study.slug} study={study} />
           ))}
         </div>
       </Section>

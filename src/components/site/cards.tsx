@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Bot, Magnet, Workflow, type LucideIcon } from "lucide-react";
-import type { Project, Solution } from "@/lib/content";
+import { ArrowRight, Bot, BriefcaseBusiness, Magnet, Workflow, type LucideIcon } from "lucide-react";
+import type { Solution } from "@/lib/content";
+import type { CaseStudy } from "@/content/case-studies";
 import { focus } from "@/components/site/ui";
 
 const solutionIcons: Record<string, LucideIcon> = {
@@ -45,60 +46,41 @@ export function SolutionCard({ solution }: { solution: Solution }) {
   );
 }
 
-const statusStyles: Record<Project["status"], string> = {
-  Built: "border-purple/40 bg-purple/10 text-accent",
-  Live: "border-emerald-400/30 bg-emerald-400/10 text-emerald-700",
-  Concept: "border-line bg-night text-mist",
-};
-
-export function StatusBadge({ project }: { project: Project }) {
-  return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.7rem] font-medium tracking-wide uppercase ${statusStyles[project.status]}`}>
-      {project.statusLabel}
-    </span>
-  );
-}
-
-/** Concept projects have no real interface yet, so they show their flow instead of a mock screenshot. */
-function ConceptDiagram({ project }: { project: Project }) {
-  const steps = ["Referral link", "Customer purchase", "Order verified", "Commission recorded"];
-  return (
-    <div role="img" aria-label={`${project.title} flow: ${steps.join(", then ")}`} className="flex h-full flex-col justify-center gap-2 p-6">
-      {steps.map((step, index) => (
-        <div key={step} className="flex items-center gap-3">
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-purple/50 text-xs text-accent">{index + 1}</span>
-          <span className="flex-1 rounded-md border border-dashed border-fog/15 px-3 py-2 text-xs text-mist">{step}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export function ProjectCard({ project }: { project: Project }) {
+/**
+ * `edge` (Case Studies page): on phones the card runs edge to edge with no
+ * rounding, and the image panel is skipped when there's no screenshot.
+ */
+export function CaseStudyCard({ study, edge = false }: { study: CaseStudy; edge?: boolean }) {
+  const shape = edge
+    ? "border-y border-line sm:rounded-2xl sm:border sm:shadow-sm"
+    : "rounded-2xl border border-line shadow-sm";
   return (
     <Link
-      href={`/projects/${project.slug}`}
-      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-panel shadow-sm transition hover:-translate-y-0.5 hover:border-purple/50 hover:shadow-lg hover:shadow-purple/10 ${focus}`}
+      href={`/case-studies/${study.slug}`}
+      className={`group flex h-full flex-col overflow-hidden bg-panel transition hover:border-purple/50 sm:hover:-translate-y-0.5 sm:hover:shadow-lg sm:hover:shadow-purple/10 ${shape} ${focus}`}
     >
-      <div className="relative aspect-[16/9] overflow-hidden border-b border-line bg-night">
-        {project.image ? (
+      <div
+        className={`relative aspect-[16/9] overflow-hidden border-b border-line bg-night ${edge && !study.image ? "hidden sm:block" : ""}`}
+      >
+        {study.image ? (
           <Image
-            src={project.image.src}
-            alt={project.image.alt}
+            src={study.image.src}
+            alt={study.image.alt}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover object-top transition duration-500 group-hover:scale-[1.02]"
           />
         ) : (
-          <ConceptDiagram project={project} />
+          <div className="flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_top_right,rgb(109_40_217/0.18),transparent_65%)]">
+            <BriefcaseBusiness aria-hidden className="size-10 text-accent" />
+          </div>
         )}
       </div>
-      <div className="flex flex-1 flex-col p-6">
-        <StatusBadge project={project} />
-        <h3 className="mt-3 text-lg font-semibold tracking-tight text-fog">{project.title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-mist">{project.brief}</p>
-        <span className="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-accent group-hover:text-fog">
-          Find out more
+      <div className={`flex flex-1 flex-col ${edge ? "px-5 py-5 sm:p-6" : "p-6"}`}>
+        <h3 className="text-lg font-semibold tracking-tight text-fog">{study.title}</h3>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-mist sm:line-clamp-none">{study.tagline}</p>
+        <span className="mt-auto inline-flex items-center gap-2 pt-4 text-sm font-medium text-accent group-hover:text-fog sm:pt-5">
+          Read case study
           <ArrowRight aria-hidden className="size-4 transition group-hover:translate-x-0.5" />
         </span>
       </div>

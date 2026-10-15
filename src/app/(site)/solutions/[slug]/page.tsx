@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Check } from "lucide-react";
-import { ProjectCard } from "@/components/site/cards";
+import { CaseStudyCard } from "@/components/site/cards";
 import { CallToAction, PageIntro, PrimaryButton, Section, SectionHeading, TextLink } from "@/components/site/ui";
-import { projectBySlug, solutionBySlug, solutions } from "@/lib/content";
+import { solutionBySlug, solutions } from "@/lib/content";
+import { caseStudyBySlug } from "@/content/case-studies";
 
 export function generateStaticParams() {
   return solutions.map((solution) => ({ slug: solution.slug }));
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function SolutionPage({ params }: { params: Promise<{ slug: string }> }) {
   const solution = solutionBySlug((await params).slug);
   if (!solution) notFound();
-  const project = solution.projectSlug ? projectBySlug(solution.projectSlug) : undefined;
+  const project = solution.projectSlug ? caseStudyBySlug(solution.projectSlug) : undefined;
   const others = solutions.filter((item) => item.slug !== solution.slug);
 
   return (
@@ -90,9 +91,9 @@ export default async function SolutionPage({ params }: { params: Promise<{ slug:
           </div>
           {project ? (
             <div>
-              <p className="text-xs font-medium tracking-[0.2em] text-accent uppercase">Related project</p>
+              <p className="text-xs font-medium tracking-[0.2em] text-accent uppercase">Related case study</p>
               <div className="mt-5">
-                <ProjectCard project={project} />
+                <CaseStudyCard study={project} />
               </div>
             </div>
           ) : null}

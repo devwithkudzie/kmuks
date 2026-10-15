@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Network, Quote, Sparkles, Target, Workflow } from "lucide-react";
+import { Network, Quote, Target, Workflow } from "lucide-react";
 import portrait from "../../../public/potrait.jpeg";
 import { InsightCard } from "@/components/site/InsightCard";
 import { Eyebrow, PrimaryButton, Section, SectionHeading, TextLink } from "@/components/site/ui";
@@ -8,26 +8,9 @@ import { site } from "@/lib/site";
 import { testimonials } from "@/content/testimonials";
 
 const principles = [
-  {
-    icon: Target,
-    title: "Business outcomes first",
-    body: "I focus on the underlying challenge — whether that's losing leads, managing referrals, repetitive work or disconnected business systems — before deciding what to build.",
-  },
-  {
-    icon: Workflow,
-    title: "Engineered around your process",
-    body: "I build and integrate solutions around the way your business operates, rather than forcing every problem into the same off-the-shelf workflow.",
-  },
-  {
-    icon: Sparkles,
-    title: "AI with a clear purpose",
-    body: "I use AI where it can make a process more useful or efficient, combining it with conventional software and automation where those are the better fit.",
-  },
-  {
-    icon: Network,
-    title: "Connected, practical systems",
-    body: "I look beyond individual features to how websites, applications, data and business tools work together across the customer journey.",
-  },
+  { icon: Target, text: "I start with your real problem, not with a tool" },
+  { icon: Workflow, text: "I build around how your business already works" },
+  { icon: Network, text: "I connect your website, apps and tools so they work as one" },
 ];
 
 export function WhyKudziemuks() {
@@ -62,19 +45,16 @@ export function WhyKudziemuks() {
             Technology should solve a business problem.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-pretty text-mist sm:text-lg">
-            I don&rsquo;t start with a tool and look for a reason to use it. I start by understanding the problem, then
-            engineer a solution around what the business actually needs.
+            I don&rsquo;t pick a tool first and then look for a use for it. I start by understanding your problem, then
+            build something that fits what your business needs.
           </p>
-          <ul className="mt-10 grid gap-8 sm:grid-cols-2">
-            {principles.map(({ icon: Icon, title, body }) => (
-              <li key={title} className="flex gap-4">
-                <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-purple/40 bg-purple/10">
+          <ul className="mt-9 space-y-3">
+            {principles.map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-4 rounded-xl border border-line bg-panel px-4 py-3.5 shadow-sm">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-purple/10">
                   <Icon aria-hidden className="size-5 text-accent" />
                 </span>
-                <div>
-                  <h3 className="font-semibold text-fog">{title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-mist">{body}</p>
-                </div>
+                <span className="font-medium text-fog">{text}</span>
               </li>
             ))}
           </ul>

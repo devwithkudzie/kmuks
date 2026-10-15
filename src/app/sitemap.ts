@@ -1,6 +1,7 @@
 import { site } from "@/lib/site";
 import { getInsights } from "@/lib/insights";
-import { projects, solutions } from "@/lib/content";
+import { solutions } from "@/lib/content";
+import { publishedCaseStudies } from "@/content/case-studies";
 import type { MetadataRoute } from "next";
 
 // Hourly, so scheduled articles join the sitemap on their publish date.
@@ -17,8 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...[
       { path: "/solutions", priority: 0.9 },
       ...solutions.map((solution) => ({ path: `/solutions/${solution.slug}`, priority: 0.8 })),
-      { path: "/projects", priority: 0.8 },
-      ...projects.map((project) => ({ path: `/projects/${project.slug}`, priority: 0.7 })),
+      { path: "/case-studies", priority: 0.8 },
+      ...publishedCaseStudies.map((study) => ({ path: `/case-studies/${study.slug}`, priority: 0.7 })),
       { path: "/about", priority: 0.6 },
       { path: "/start-a-project", priority: 0.8 },
     ].map(({ path, priority }) => ({

@@ -14,7 +14,7 @@ export type Solution = {
   approach: { title: string; body: string }[];
   suits: string[];
   example: string;
-  projectSlug?: string;
+  projectSlug?: string; // related case study
 };
 
 export const solutions: Solution[] = [
@@ -49,7 +49,7 @@ export const solutions: Solution[] = [
     ],
     example:
       "An affiliate campaign for a building-materials supplier, where each referral is attributed to the marketer who brought it in.",
-    projectSlug: "campaign-lead-capture",
+    projectSlug: "kudziemuks-lead-capture",
   },
   {
     slug: "sales-workflow-automation",
@@ -82,7 +82,7 @@ export const solutions: Solution[] = [
     ],
     example:
       "Recording a customer's purchase against the correct referrer and calculating the commission owed.",
-    projectSlug: "referral-commission-tracking",
+    projectSlug: "referral-to-revenue",
   },
   {
     slug: "ai-business-applications",
@@ -115,151 +115,21 @@ export const solutions: Solution[] = [
     ],
     example:
       "An administrative dashboard that consolidates affiliate activity, customer orders and commission status, with AI-assisted insights where useful.",
-    projectSlug: "client-campaign-setup-platform",
+    projectSlug: "victor-holdings-campaign-platform",
   },
 ];
 
-export type Project = {
-  slug: string;
-  status: "Built" | "Live" | "Concept";
-  statusLabel: string;
-  title: string;
-  /** One sentence for cards; the full summary is on the case study page. */
-  brief: string;
-  summary: string;
-  tags: string[];
-  image?: { src: string; alt: string };
-  challenge: string;
-  approach: string;
-  contribution: string[];
-  engineering: string[];
-  result: string;
-  solutionSlug: string;
-};
-
-export const projects: Project[] = [
-  {
-    slug: "client-campaign-setup-platform",
-    status: "Built",
-    statusLabel: "Client project",
-    title: "Client Campaign Setup Platform",
-    brief: "Guided setup links that collect everything needed to launch a client's campaign.",
-    summary:
-      "Secure setup links and template-driven forms that collect everything needed to launch a client's marketing campaign — straight into a structured record.",
-    tags: ["Next.js", "TypeScript", "Google Sheets API", "Workflow engineering"],
-    image: { src: "/projects/client-setup-form.png", alt: "Multi-step campaign setup form with a progress checklist" },
-    challenge:
-      "Launching a campaign for a building-materials supplier needed pricing, delivery, payment and customer details from the client. Collecting them over chat was slow, incomplete and hard to keep organised.",
-    approach:
-      "Replace the back-and-forth with a guided form the client completes once, through a private link, with questions tailored to their industry and answers saved where the team already works.",
-    contribution: [
-      "Designed and built the full application: client forms, admin area and data storage",
-      "Created a template system so each industry gets its own questions without new code",
-      "Built link management: expiry, disabling, replacing and deleting links",
-      "Connected storage to Google Sheets with keyless, federated authentication",
-    ],
-    engineering: [
-      "Next.js App Router and TypeScript, server-rendered and validated end to end with Zod",
-      "Template-driven multi-step forms with conditional questions and structured answers (e.g. price per quantity)",
-      "Unguessable one-time tokens, rate limiting and server-side validation of every answer",
-      "Google Sheets as the data store, accessed via Workload Identity Federation — no stored service-account keys",
-    ],
-    result:
-      "A working platform in use for real campaigns. Clients complete their setup in one guided session, and every submission arrives complete, validated and in a consistent format.",
-    solutionSlug: "ai-business-applications",
-  },
-  {
-    slug: "campaign-lead-capture",
-    status: "Live",
-    statusLabel: "Live system",
-    title: "Campaign Lead Capture & Attribution",
-    brief: "Campaign pages that capture applications, record their source and alert me instantly.",
-    summary:
-      "Public campaign pages that capture applications, record where each one came from, alert me instantly and organise everything for follow-up.",
-    tags: ["Lead capture", "UTM attribution", "WhatsApp Cloud API", "Dashboards"],
-    image: { src: "/projects/campaign-form.png", alt: "Public campaign application form for a free website offer" },
-    challenge:
-      "Promotional campaigns shared across Facebook, Instagram and WhatsApp produced enquiries with no reliable record of where they came from — and no prompt to follow up quickly.",
-    approach:
-      "Give each campaign one shareable page that captures applications as structured records, tags every one with its source, and notifies me the moment it arrives.",
-    contribution: [
-      "Designed and built the campaign pages, submission pipeline and admin views",
-      "Implemented source attribution from campaign links and UTM tags",
-      "Integrated WhatsApp alerts through Meta's WhatsApp Cloud API",
-      "Built the admin dashboard for applications, sources and follow-up",
-    ],
-    engineering: [
-      "Reusable public-campaign templates: one definition drives the page, validation and storage",
-      "A separate sheet tab per campaign with columns added automatically as questions change",
-      "Honeypot spam protection, rate limiting and server-side validation of every answer",
-      "Notifications sent after the response, so a slow or failed alert never blocks the applicant",
-    ],
-    result:
-      "Running live for the Free Website campaign. Every application is captured with its source and is visible in the admin dashboard for follow-up.",
-    solutionSlug: "customer-acquisition-systems",
-  },
-  {
-    slug: "referral-commission-tracking",
-    status: "Concept",
-    statusLabel: "Concept",
-    title: "Referral & Commission Tracking",
-    brief: "Crediting purchases to referrers and managing commission from one view.",
-    summary:
-      "A system concept for attributing customer purchases to referrers, verifying sales and managing commission records from one administrative view.",
-    tags: ["Referral attribution", "Sales verification", "Commission workflows"],
-    challenge:
-      "Businesses that sell through affiliates or referrers struggle to prove which referrer brought which customer, and to calculate commission fairly without manual reconciliation.",
-    approach:
-      "Give each referrer a unique link or code, record purchases against it, verify orders before commission is approved, and show everything in one dashboard.",
-    contribution: [
-      "Defined the workflow from referral to verified sale to commission",
-      "Designed the data model for referrers, customers, orders and payouts",
-      "Planned the administrative dashboard and verification steps",
-    ],
-    engineering: [
-      "Referral codes and links tied to campaign attribution",
-      "Order verification before commission becomes payable",
-      "Rule-based commission calculation with an auditable payment record",
-      "An admin overview of referrer performance and outstanding commission",
-    ],
-    result:
-      "A concept, not yet a working product. It builds directly on the attribution and lead-capture pieces already running in the projects above.",
-    solutionSlug: "sales-workflow-automation",
-  },
-];
-
+// How I Work: descriptive titles only — the steps should read at a glance.
 export const workSteps = [
-  {
-    title: "Understand the problem",
-    body: "I examine the business process, the intended customer, existing tools and the point where opportunities are being lost.",
-  },
-  {
-    title: "Define the right solution",
-    body: "I identify what needs to be built, what can be integrated, where AI adds value and how success should be measured.",
-  },
-  {
-    title: "Engineer and integrate",
-    body: "I develop the required software, connect the relevant systems and test the solution against real workflows.",
-  },
-  {
-    title: "Deploy and improve",
-    body: "I help put the system into operation, monitor how it behaves and identify practical improvements based on usage and results.",
-  },
+  "Understand the problem and where opportunities are lost",
+  "Decide what to build, integrate or automate",
+  "Launch, monitor and keep improving",
 ];
 
 export const engagements = [
-  {
-    title: "Discovery & technical assessment",
-    body: "Define the problem, requirements, constraints and proposed approach before anything is built.",
-  },
-  {
-    title: "Project engineering",
-    body: "Build an agreed solution with a clear scope and milestones.",
-  },
-  {
-    title: "Ongoing improvement",
-    body: "Maintain, extend and refine the system as business needs evolve.",
-  },
+  "Discovery: define the problem and the right approach",
+  "Project: build an agreed solution with clear milestones",
+  "Ongoing: maintain and extend the system as you grow",
 ];
 
 export const techStack = [
@@ -273,6 +143,3 @@ export function solutionBySlug(slug: string) {
   return solutions.find((solution) => solution.slug === slug);
 }
 
-export function projectBySlug(slug: string) {
-  return projects.find((project) => project.slug === slug);
-}
