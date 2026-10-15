@@ -11,7 +11,8 @@
 type LeadAlert = {
   name: string;
   businessName: string;
-  whatsapp: string;
+  /** How to reach them, e.g. "name@company.com · +263 77 000 0000". */
+  contact: string;
   description: string;
   source: string;
 };
@@ -44,7 +45,7 @@ export async function notifyNewLead(lead: LeadAlert): Promise<void> {
     return;
   }
 
-  const values = [lead.name, lead.businessName, lead.whatsapp, lead.description, lead.source];
+  const values = [lead.name, lead.businessName, lead.contact, lead.description, lead.source];
   const body = settings.template
     ? {
         messaging_product: "whatsapp",
@@ -62,10 +63,10 @@ export async function notifyNewLead(lead: LeadAlert): Promise<void> {
         type: "text",
         text: {
           body: [
-            "New Work with me lead",
+            "New lead",
             `Name: ${lead.name}`,
             `Business: ${lead.businessName}`,
-            `WhatsApp: ${lead.whatsapp}`,
+            `Contact: ${lead.contact}`,
             `What they do: ${lead.description}`,
             `Source: ${lead.source}`,
           ].join("\n"),

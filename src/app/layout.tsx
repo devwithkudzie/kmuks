@@ -37,8 +37,8 @@ const siteUrl = absoluteUrl(site.siteUrl);
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: `${site.fullName} (${site.handle}) — marketing that brings you customers`,
-    template: `%s · ${site.fullName} (${site.handle})`,
+    default: site.title,
+    template: "%s | Kudziemuks",
   },
   description: site.description,
   keywords: [
@@ -48,9 +48,12 @@ export const metadata: Metadata = {
     "Prosper Mukungurutse",
     "Kudziemuks",
     "Kudzie Muks",
-    "customer growth review",
-    "SME marketing Zimbabwe",
-    "whatsapp leads",
+    "AI-powered software engineering",
+    "customer acquisition systems",
+    "lead generation software",
+    "sales workflow automation",
+    "AI business applications",
+    "software engineer Zimbabwe",
   ],
   authors: [{ name: site.fullName, url: site.linkedinUrl }],
   openGraph: {
@@ -67,7 +70,6 @@ export const metadata: Metadata = {
     description: site.description,
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: "/" },
 };
 
 const personJsonLd = {
@@ -76,7 +78,7 @@ const personJsonLd = {
   name: site.fullName,
   alternateName: site.alternateNames,
   url: siteUrl,
-  jobTitle: "Marketing Consultant",
+  jobTitle: "Software Engineer",
   sameAs: [site.linkedinUrl, site.facebookUrl, site.instagramUrl, site.xUrl],
 };
 
@@ -94,9 +96,9 @@ const jsonLd = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${inter.variable} ${news.variable} h-full antialiased`}>
-      <body className="min-h-full bg-white font-sans text-canvas">
+      <body className="min-h-full bg-canvas font-sans text-fog">
         <a
-          href="#home"
+          href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-purple focus:px-3 focus:py-2 focus:text-white"
         >
           <span aria-hidden>{">"}</span> skip to content

@@ -31,14 +31,14 @@ export function FieldWrapper({
     <div className="mt-7 first:mt-0">
       <LabelTag htmlFor={labelFor} className={labelClass}>
         {label}
-        {required ? <span className="text-purple-300" aria-hidden> *</span> : null}
+        {required ? <span className="text-accent" aria-hidden> *</span> : null}
         {required ? <span className="sr-only"> (required)</span> : null}
         {optional ? <span className="font-normal text-mist"> (optional)</span> : null}
       </LabelTag>
       {hint ? <p className="mt-1 text-[0.8rem] leading-relaxed text-mist">{hint}</p> : null}
       {children}
       {error ? (
-        <p role="alert" className="mt-2 flex items-start gap-1.5 text-sm text-rose-300">
+        <p role="alert" className="mt-2 flex items-start gap-1.5 text-sm text-danger">
           <span aria-hidden className="mt-px">⚠</span>
           <span>{error}</span>
         </p>

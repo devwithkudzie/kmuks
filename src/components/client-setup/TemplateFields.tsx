@@ -132,7 +132,7 @@ export function TemplateFieldInput({ template, field, answers, product, error, o
               {common.hint ? <span className="text-mist"> ({common.hint.toLowerCase()})</span> : null}
             </span>
           </label>
-          {error ? <p role="alert" className="mt-2 text-sm text-rose-300">⚠ {error}</p> : null}
+          {error ? <p role="alert" className="mt-2 text-sm text-danger">⚠ {error}</p> : null}
         </div>
       );
     case "radio":

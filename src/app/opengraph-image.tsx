@@ -29,7 +29,7 @@ export default function OpenGraphImage() {
         <img src={logo} alt="kudziemuks" width={306} height={44} />
         <div style={{ display: "flex", flexDirection: "column", maxWidth: 980 }}>
           <div style={{ fontSize: 58, lineHeight: 1.1, fontWeight: 800 }}>
-            expertise alone isn’t enough.
+            I engineer systems that help businesses win customers.
           </div>
           <div
             style={{
@@ -40,11 +40,11 @@ export default function OpenGraphImage() {
               fontWeight: 600,
             }}
           >
-            it’s time to stop relying on word-of-mouth.
+            Customer acquisition · Lead generation · AI integration · Automation
           </div>
         </div>
         <div style={{ display: "flex", fontSize: 20, color: "#A1A1AA" }}>
-          digital authority for african founders and premium brands
+          AI-powered software engineering
         </div>
       </div>
     ),

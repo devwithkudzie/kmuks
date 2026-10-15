@@ -1,62 +1,84 @@
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { z } from "zod";
+
+// Articles are Markdown files in src/content/insights (see the README there).
+const DIRECTORY = join(process.cwd(), "src/content/insights");
+
+const frontmatterSchema = z.object({
+  title: z.string().min(1, "title is required"),
+  excerpt: z.string().min(1, "excerpt is required"),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "date must look like 2026-10-20"),
+  category: z.string().default("Insights"),
+  cover: z.string().regex(/^\//, "cover must start with / e.g. /insights/image.jpg").optional(),
+  draft: z.enum(["true", "false"]).optional(),
+});
+
 export type Insight = {
   slug: string;
   title: string;
   excerpt: string;
   date: string;
+  category: string;
+  cover?: string;
+  draft: boolean;
   readTime: string;
-  body: string[];
+  body: string;
 };
 
-export const insights: Insight[] = [
-  {
-    slug: "why-more-marketing-doesnt-mean-more-customers",
-    title: "Why doing more marketing doesn't automatically mean more customers",
-    excerpt:
-      "Posting more, running more ads or being on every channel isn't the fix if the real gap is somewhere else in the customer journey.",
-    date: "2026-01-12",
-    readTime: "4 min read",
-    body: [
-      "Most businesses respond to slow growth by doing more of what they're already doing — more posts, more ads, more channels. But volume isn't the same as direction.",
-      "Before recommending what to fix, it's worth figuring out where the real gap is: is it that people don't know you exist, that your message isn't landing, or that enquiries are falling through the cracks after someone reaches out?",
-      "Each of those problems has a completely different fix. Getting the diagnosis right matters more than doing more of any one activity.",
-    ],
-  },
-  {
-    slug: "customer-journey-not-channel-list",
-    title: "Think in customer journeys, not channel lists",
-    excerpt:
-      "LinkedIn, Facebook, Instagram and TikTok aren't a checklist. The customer determines which channels are worth showing up on.",
-    date: "2026-02-03",
-    readTime: "3 min read",
-    body: [
-      "It's tempting to treat marketing as a list of channels to be present on. But being everywhere isn't a strategy — it's a way to spread your effort thin.",
-      "The better starting point is the customer journey: how do the people you want to reach actually find businesses like yours, and what happens between that first moment of attention and them becoming a customer?",
-      "Once that journey is clear, the right channels tend to reveal themselves — and so does everything else you need to build around them.",
-    ],
-  },
-  {
-    slug: "what-happens-after-they-enquire",
-    title: "What happens after someone enquires matters as much as getting the enquiry",
-    excerpt:
-      "Businesses can spend heavily on generating attention and then quietly lose customers after the click.",
-    date: "2026-02-21",
-    readTime: "3 min read",
-    body: [
-      "A lot of marketing effort is spent getting someone to raise their hand — a click, a message, a form fill. Far less attention goes to what happens next.",
-      "If enquiries sit unanswered, get a slow or generic response, or simply fall through the cracks, all that upstream effort is wasted.",
-      "Improving what happens after someone enquires is often the fastest, cheapest way to bring in more customers from the traffic you already have.",
-    ],
-  },
-];
-
-export function getInsightBySlug(slug: string) {
-  return insights.find((insight) => insight.slug === slug);
+/** Splits `---` frontmatter (simple `key: value` lines) from the Markdown body. */
+function parseFile(slug: string, raw: string): Insight {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!match) throw new Error(`Insight "${slug}.md" must start with a --- header block (see src/content/insights/README.md).`);
+  const fields: Record<string, string> = {};
+  for (const line of match[1].split(/\r?\n/)) {
+    const pair = line.match(/^([a-zA-Z]+):\s*(.*)$/);
+    if (!pair) continue;
+    let value = pair[2].trim();
+    if (/^".*"$/.test(value)) value = value.slice(1, -1).replace(/\\"/g, '"');
+    fields[pair[1]] = value;
+  }
+  const parsed = frontmatterSchema.safeParse(fields);
+  if (!parsed.success) {
+    throw new Error(`Insight "${slug}.md": ${parsed.error.issues.map((issue) => `${String(issue.path[0])} — ${issue.message}`).join("; ")}`);
+  }
+  const body = match[2].trim();
+  const minutes = Math.max(1, Math.round(body.split(/\s+/).filter(Boolean).length / 200));
+  return { slug, ...parsed.data, draft: parsed.data.draft === "true", readTime: `${minutes} min read`, body };
 }
 
+function readAll(): Insight[] {
+  return readdirSync(DIRECTORY)
+    .filter((file) => file.endsWith(".md") && file.toLowerCase() !== "readme.md")
+    .map((file) => parseFile(file.replace(/\.md$/, ""), readFileSync(join(DIRECTORY, file), "utf8")))
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
+/** Published articles, newest first: not drafts, and dated today or earlier (UTC). */
+export function getInsights(): Insight[] {
+  const today = new Date().toISOString().slice(0, 10);
+  return readAll().filter((insight) => !insight.draft && insight.date <= today);
+}
+
+export function getInsightBySlug(slug: string) {
+  return getInsights().find((insight) => insight.slug === slug);
+}
+
+/** Older and newer neighbours of an article in the published list. */
 export function getAdjacentInsights(slug: string) {
+  const insights = getInsights();
   const index = insights.findIndex((insight) => insight.slug === slug);
   return {
-    previous: index > 0 ? insights[index - 1] : null,
-    next: index >= 0 && index < insights.length - 1 ? insights[index + 1] : null,
+    newer: index > 0 ? insights[index - 1] : null,
+    older: index >= 0 && index < insights.length - 1 ? insights[index + 1] : null,
   };
+}
+
+export function formatInsightDate(date: string) {
+  return new Date(`${date}T00:00:00Z`).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }

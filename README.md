@@ -59,9 +59,9 @@ local-development output.
 
 See [Vercel OIDC documentation](https://vercel.com/docs/oidc) for setup details.
 
-## "Work with me" leads and WhatsApp alerts
+## Project enquiries and WhatsApp alerts
 
-Every "Work with me" / contact button on the main site opens the same short form. Submissions are saved to the **Work With Me** tab of the client setup spreadsheet (created automatically), including which button was clicked (`Source`), the page, and any UTM tags.
+Every "Discuss a Project" / "Start a Project" button on the main site links to `/start-a-project`. Enquiries are saved to the **Project Enquiries** tab of the client setup spreadsheet (created automatically), including the solution they came from, the page, and any UTM tags. Older leads from the previous "Work with me" form remain in the **Work With Me** tab.
 
 After a lead is saved, the site sends you a WhatsApp alert through Meta's WhatsApp Cloud API. If the `WHATSAPP_*` variables are blank, alerts are skipped and leads are still saved.
 
@@ -75,11 +75,11 @@ Setup:
    New lead from kudziemuks.co.zw
    Name: {{1}}
    Business: {{2}}
-   WhatsApp: {{3}}
-   What they do: {{4}}
+   Contact: {{3}}
+   Details: {{4}}
    Source: {{5}}
    ```
 
 4. Set `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_NOTIFY_TO` (your number, digits only), `WHATSAPP_TEMPLATE_NAME` and `WHATSAPP_TEMPLATE_LANGUAGE` (the template's language code, e.g. `en` or `en_US`) in Vercel and `.env.local`.
 
-Failed alerts are logged as `[work-with-me] WhatsApp notification failed:` with Meta's error message.
+Failed alerts are logged as `[start-a-project] WhatsApp notification failed:` with Meta's error message.

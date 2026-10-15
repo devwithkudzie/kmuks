@@ -3,6 +3,19 @@
 @theme inline {
   --font-sans: var(--font-inter);
   --font-serif: var(--font-news);
+}
+
+/*
+ * Colours are theme variables (not inlined) so a section of the site can swap
+ * them: the dark values below are the default (admin, client forms), and
+ * .theme-light switches the public website to a light palette.
+ *   canvas/night — page and alternate section backgrounds
+ *   fog/mist     — primary and secondary text
+ *   line/panel   — borders and card surfaces
+ *   accent       — purple for text and icons, readable on the background
+ *   danger       — error messages
+ */
+@theme {
   --color-canvas: #0f0f11;
   --color-paper: #f3f1eb;
   --color-night: #111113;
@@ -15,6 +28,28 @@
   --color-violet: #4c1d95;
   --color-lime: #a3e635;
   --color-muted: #a1a1aa;
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-panel: rgb(255 255 255 / 0.03);
+  --color-accent: #c4b5fd;
+  --color-danger: #fda4af;
+}
+
+.theme-light {
+  --color-canvas: #ffffff;
+  --color-night: #f7f5fd;
+  --color-fog: #17151d;
+  --color-mist: #5b5768;
+  --color-line: #e7e2f2;
+  --color-panel: #ffffff;
+  --color-accent: #6d28d9;
+  --color-danger: #be123c;
+  color-scheme: light;
+}
+
+/* Keep overscroll and the area behind the light site white too. */
+html:has(.theme-light),
+html:has(.theme-light) body {
+  background: #ffffff;
 }
 
 html {

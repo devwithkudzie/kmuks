@@ -78,7 +78,7 @@ export function PublicCampaignForm({ token, template, product, utm }: {
           role="status"
           className="bg-night px-5 py-16 text-center sm:rounded-2xl sm:border sm:border-white/10 sm:px-8 sm:py-12 sm:shadow-2xl sm:shadow-black/40"
         >
-          <CheckCircle2 aria-hidden className="mx-auto size-12 text-purple-300" />
+          <CheckCircle2 aria-hidden className="mx-auto size-12 text-accent" />
           <h1 className="mt-5 text-2xl font-bold tracking-tight text-balance text-fog sm:text-3xl">
             {copy.successHeading || "Thank you!"}
           </h1>
@@ -118,7 +118,7 @@ export function PublicCampaignForm({ token, template, product, utm }: {
           <span className="inline-flex items-center gap-1.5">
             <Clock aria-hidden className="size-3.5" /> Takes about {minutes} minute{minutes === 1 ? "" : "s"}
           </span>
-          <span><span className="text-purple-300">*</span> Required</span>
+          <span><span className="text-accent">*</span> Required</span>
         </div>
         <fieldset disabled={busy}>
           {template.fields.map((field) => (

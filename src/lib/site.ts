@@ -40,10 +40,9 @@ export const site = {
     "Kudziemuks",
     "Kudzie Muks",
   ],
-  title:
-    "Kudzaishe Prosper Mukungurutse (Kudziemuks) — Marketing that brings you customers",
+  title: "Kudziemuks | AI-Powered Software Engineering",
   description:
-    "Kudzaishe Prosper Mukungurutse — known as Kudzie or Kudzai — helps SMEs find the right message, create content around it, and turn attention into customers.",
+    "I build AI-powered software and customer acquisition systems to help businesses capture leads, manage prospects and improve conversion processes.",
   linkedinUrl: "https://www.linkedin.com/in/kmuks",
   facebookUrl: "https://www.facebook.com/prospermuks",
   instagramUrl: "https://www.instagram.com/prospermuks/",
@@ -60,42 +59,3 @@ export const site = {
   /** Shown in copy ("Visit kudziemuks.co.zw"); fixed so local previews don't say "localhost". */
   domain: new URL(PRODUCTION_SITE_URL).hostname.replace(/^www\./, ""),
 } as const;
-
-export type SocialProfile = {
-  platform: string;
-  url: string;
-};
-
-export type WhatsAppAnswers = {
-  name: string;
-  businessName: string;
-  businessDescription: string;
-  onlineProfiles: SocialProfile[];
-};
-
-export function whatsappHref(source = "landing-page", answers?: WhatsAppAnswers) {
-  if (!answers) {
-    return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(
-      `Hi Kudziemuks — lead from ${source} on ${site.domain}. I want a Free Customer Growth Review.`,
-    )}`;
-  }
-
-  const onlineLines = answers.onlineProfiles
-    .filter((profile) => profile.url.trim())
-    .map((profile) => `• ${profile.platform}: ${profile.url.trim()}`);
-
-  const text = [
-    "*New Customer Growth Review Request*",
-    "",
-    `*Name:* ${answers.name}`,
-    `*Business:* ${answers.businessName}`,
-    `*What they do:* ${answers.businessDescription}`,
-    "",
-    "*Online presence:*",
-    ...(onlineLines.length ? onlineLines : ["Not specified"]),
-    "",
-    `_Submitted from ${source} on ${site.domain}_`,
-  ].join("\n");
-
-  return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(text)}`;
-}
