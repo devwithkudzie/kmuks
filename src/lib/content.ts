@@ -123,7 +123,7 @@ export const solutions: Solution[] = [
 // The customer journey every engagement follows, from first impression to proven result.
 export const journey = [
   { stage: "Get chosen", body: "Positioning and content that make you the business people notice, remember and trust." },
-  { stage: "Capture", body: "Landing pages, forms and WhatsApp flows that catch every enquiry and record where it came from." },
+  { stage: "Capture", body: "Landing pages, Meta and Google Ads, email campaigns and WhatsApp flows that catch every enquiry and record where it came from." },
   { stage: "Convert", body: "A CRM pipeline with automatic follow-ups, so no enquiry is forgotten before it becomes a sale." },
   { stage: "Measure", body: "Dashboards that show which ads, referrals and campaigns actually make you money." },
 ];
@@ -148,7 +148,7 @@ export const packages: ServicePackage[] = [
     tagline: "Never miss an enquiry again.",
     includes: [
       "Landing page or enquiry form built around your offer",
-      "Click-to-WhatsApp ads and forms tagged by campaign",
+      "Meta and Google Ads, email campaigns and forms, all tagged by campaign",
       "Every enquiry saved automatically, with an instant reply",
     ],
   },
@@ -196,7 +196,7 @@ export const packages: ServicePackage[] = [
 ];
 
 // Tools I set up and connect for clients.
-export const tools = ["Zoho CRM", "ClickUp", "n8n", "WhatsApp Business", "Meta Ads", "Google Workspace"];
+export const tools = ["Zoho CRM", "ClickUp", "n8n", "WhatsApp Business", "Email campaigns", "Meta Ads", "Google Ads", "Google Workspace"];
 
 export const workSteps = [
   "Understand the problem and where opportunities are lost",
@@ -212,7 +212,8 @@ export const engagements = [
 
 export const techStack = [
   { area: "Software engineering", items: ["Python", "FastAPI", "JavaScript / TypeScript", "React / Next.js"] },
-  { area: "CRM & automation", items: ["Zoho CRM", "ClickUp", "n8n", "WhatsApp Business"] },
+  { area: "CRM & automation", items: ["Zoho CRM", "ClickUp", "n8n", "WhatsApp Business", "Email campaigns"] },
+  { area: "Advertising", items: ["Meta Ads", "Google Ads"] },
   { area: "Data & integrations", items: ["SQL / MySQL", "REST APIs", "Google Workspace APIs", "Connected business systems"] },
   { area: "AI engineering", items: ["AI API integration", "Locally hosted language models"] },
   { area: "Delivery", items: ["Docker", "Vercel", "Deployment & maintenance"] },
