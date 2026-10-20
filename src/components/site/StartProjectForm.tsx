@@ -173,7 +173,7 @@ export function StartProjectForm({ solutions, initialSolution }: { solutions: Op
             type="submit"
             className={`inline-flex min-h-13 w-full items-center justify-center rounded-lg bg-purple px-6 text-base font-semibold text-white transition hover:bg-violet disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto ${focusRing}`}
           >
-            {busy ? "Sending…" : "Send Project Enquiry"}
+            {busy ? "Sending…" : "Send Enquiry"}
           </button>
           <p className="mt-4 flex items-center gap-1.5 text-xs text-mist">
             <Lock aria-hidden className="size-3.5 shrink-0" />

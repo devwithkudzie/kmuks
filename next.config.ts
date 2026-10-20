@@ -15,6 +15,8 @@ const nextConfig: NextConfig = {
       { source: "/projects/:slug", destination: "/case-studies/:slug", permanent: true },
       // Case studies renamed when the portfolio was restructured.
       { source: "/case-studies/client-campaign-setup-platform", destination: "/case-studies/victor-holdings-campaign-platform", permanent: true },
+      // AI applications folded into the three core solutions; Revenue Tracking took its place.
+      { source: "/solutions/ai-business-applications", destination: "/solutions", permanent: true },
       { source: "/case-studies/campaign-lead-capture", destination: "/case-studies/kudziemuks-lead-capture", permanent: true },
     ];
   },

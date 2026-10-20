@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Bot, ChartColumn, CircleCheck, Magnet, Plug } from "lucide-react";
+import { ChartColumn, CircleCheck, Magnet, MessageCircle, Target } from "lucide-react";
 import heroPhoto from "../../../public/hero.jpg";
 import { CaseStudyCard, SolutionCard } from "@/components/site/cards";
 import { CallToAction, Eyebrow, PrimaryButton, SecondaryButton, Section, SectionHeading, TextLink } from "@/components/site/ui";
-import { ClientTestimonials, LatestInsights, WhyKudziemuks } from "@/components/site/home";
-import { HowIWork } from "@/components/site/HowIWork";
+import { ClientTestimonials, CustomerJourney, LatestInsights, Packages, ToolStrip, WhyKudziemuks } from "@/components/site/home";
 import { solutions } from "@/lib/content";
 import { featuredCaseStudies } from "@/content/case-studies";
 import { getInsights } from "@/lib/insights";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: { absolute: "Kudziemuks | AI-Powered Software Engineering" },
-  description:
-    "I build AI-powered software and customer acquisition systems to help businesses capture leads, manage prospects and improve conversion processes.",
+  title: { absolute: site.title },
+  description: site.description,
   alternates: { canonical: "/" },
 };
 
 // Re-check hourly so the latest insights include newly scheduled articles.
 export const revalidate = 3600;
 
+// Get chosen → Capture → Convert → Measure, at a glance.
 const capabilities = [
-  { icon: Magnet, title: "Lead generation", body: "Capture more relevant enquiries" },
-  { icon: Bot, title: "AI & automation", body: "Reduce manual follow-up" },
-  { icon: Plug, title: "Connected systems", body: "Link tools and data" },
-  { icon: ChartColumn, title: "Conversion insights", body: "See where deals stall" },
+  { icon: Target, title: "Get chosen", body: "Be the business people pick" },
+  { icon: Magnet, title: "Capture", body: "Never miss an enquiry" },
+  { icon: MessageCircle, title: "Convert", body: "Follow up automatically" },
+  { icon: ChartColumn, title: "Measure", body: "See what makes you money" },
 ];
 
 // The path of one enquiry through a connected system, shown on the hero photo.
@@ -74,23 +74,23 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-6xl gap-16 px-5 pt-14 pb-20 sm:px-8 sm:pt-20 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14 lg:pb-24">
           <div>
             <div className="animate-fade-up">
-              <Eyebrow>Software · AI · Growth systems</Eyebrow>
+              <Eyebrow>Positioning · CRM · Automation</Eyebrow>
             </div>
             <h1
               className="animate-fade-up mt-6 text-[clamp(2.4rem,6.2vw,4.1rem)] leading-[1.04] font-bold tracking-[-0.035em] text-balance text-fog"
               style={{ animationDelay: "0.1s" }}
             >
-              I engineer systems that help businesses <span className="text-accent">win customers.</span>
+              I help businesses <span className="text-accent">win more customers.</span>
             </h1>
             <p
               className="animate-fade-up mt-6 max-w-xl text-base leading-relaxed text-pretty text-mist sm:text-lg"
               style={{ animationDelay: "0.2s" }}
             >
-              I build AI-powered software and customer acquisition systems that help businesses capture leads, manage
-              prospects and improve conversion processes.
+              Positioning that gets you chosen, and systems that make sure no enquiry slips away before it becomes a
+              sale.
             </p>
             <div className="animate-fade-up mt-9 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "0.3s" }}>
-              <PrimaryButton href="/start-a-project">Discuss a Project</PrimaryButton>
+              <PrimaryButton href="/start-a-project?solution=customer-leak-audit">Get a Free Customer Leak Audit</PrimaryButton>
               <SecondaryButton href="/case-studies">See Case Studies</SecondaryButton>
             </div>
           </div>
@@ -123,8 +123,8 @@ export default function Home() {
       <Section tone="night">
         <SectionHeading
           eyebrow="Solutions"
-          title="Software solutions built around business growth."
-          intro="I build custom software, AI-powered applications and connected business systems that help companies attract customers, manage sales processes and operate more efficiently."
+          title="Systems that turn enquiries into sales."
+          intro="Capture every enquiry, follow up on every lead, and see exactly which marketing makes you money. I set up and connect the tools, and build custom software where the tools fall short."
           action={<TextLink href="/solutions">View all solutions</TextLink>}
         />
         <div className="mt-12 grid gap-5 lg:grid-cols-3">
@@ -134,8 +134,10 @@ export default function Home() {
         </div>
       </Section>
 
+      <ToolStrip />
+      <CustomerJourney />
+      <Packages />
       <WhyKudziemuks />
-      <HowIWork />
       <ClientTestimonials />
 
       <Section>

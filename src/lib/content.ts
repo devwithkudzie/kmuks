@@ -20,10 +20,10 @@ export type Solution = {
 export const solutions: Solution[] = [
   {
     slug: "customer-acquisition-systems",
-    stage: "01 · Attract",
-    title: "Customer Acquisition Systems",
+    stage: "01 · Capture",
+    title: "Lead Capture Systems",
     image: { src: "/how-publish.jpg", alt: "A person browsing a business's page on a phone" },
-    summary: "Capture leads, track referrals and turn campaigns into measurable opportunities.",
+    summary: "Never miss an enquiry again. Every ad, form and WhatsApp message lands in one place.",
     intro:
       "I help businesses turn marketing activity into trackable customer opportunities — so every campaign, referral and enquiry lands somewhere it can be followed up and measured.",
     capabilities: [
@@ -54,14 +54,14 @@ export const solutions: Solution[] = [
   {
     slug: "sales-workflow-automation",
     stage: "02 · Convert",
-    title: "Sales & Workflow Automation",
+    title: "CRM & Follow-Up Automation",
     image: { src: "/how-recommend.jpg", alt: "A team discussing a sales process around a laptop" },
-    summary: "Connect enquiries, orders, follow-ups and sales operations.",
+    summary: "Turn enquiries into paying customers with a clear pipeline and automatic follow-ups.",
     intro:
       "I help businesses manage prospects, coordinate follow-ups and reduce the manual work between an enquiry and a completed sale.",
     capabilities: [
-      "Customer and sales pipeline management",
-      "Automated notifications and follow-up reminders",
+      "CRM setup and sales pipelines (Zoho CRM and others)",
+      "Automated WhatsApp and email follow-ups",
       "Order and referral verification",
       "Commission calculation and payment records",
     ],
@@ -82,44 +82,122 @@ export const solutions: Solution[] = [
     ],
     example:
       "Recording a customer's purchase against the correct referrer and calculating the commission owed.",
-    projectSlug: "referral-to-revenue",
+    projectSlug: "victor-holdings-campaign-platform",
   },
   {
-    slug: "ai-business-applications",
-    stage: "03 · Intelligence",
-    title: "AI-Powered Business Applications",
-    image: { src: "/how-repurpose.jpg", alt: "A professional working in a business application on a laptop" },
-    summary: "Build intelligent tools that simplify complex business processes.",
+    slug: "revenue-tracking",
+    stage: "03 · Measure",
+    title: "Revenue Tracking",
+    image: { src: "/how-repurpose.jpg", alt: "A professional reviewing a business dashboard on a laptop" },
+    summary: "Know exactly which ads, referrals and campaigns make you money.",
     intro:
-      "I build custom software that uses AI and connected data to help businesses handle information more efficiently and make better-informed decisions.",
+      "I connect your marketing, enquiries and sales so you can see which campaigns, referrers and channels actually produce paying customers — not just clicks.",
     capabilities: [
-      "AI-assisted enquiry handling",
-      "Intelligent information extraction and classification",
-      "Custom business dashboards",
-      "Integrations between existing tools and data",
+      "Enquiry-to-sale tracking by campaign and referrer",
+      "Dashboards for cost per lead, conversion rate and revenue",
+      "Referral and commission reporting",
+      "AI-assisted summaries of what is working",
     ],
     problem: [
-      "Teams spend hours reading, sorting and re-typing information from enquiries, documents and messages.",
-      "Data sits in separate tools, so it is hard to get one clear view of what is happening in the business.",
+      "Most businesses can see how much they spend on marketing, but not which ad or referral turned into a sale.",
+      "Sales close in WhatsApp chats and phone calls, so the link between the campaign and the money is lost.",
     ],
     approach: [
-      { title: "AI where it helps", body: "Language models classify enquiries, extract key details and summarise conversations — applied to specific steps, not added for their own sake." },
-      { title: "Human in control", body: "AI suggestions are reviewable, and important decisions stay with the team." },
-      { title: "Connected data", body: "Existing tools are connected through APIs so information flows without re-entry." },
-      { title: "One clear view", body: "Dashboards bring activity, orders and status together in one place." },
+      { title: "Every sale has a source", body: "Each enquiry carries the campaign, ad or referral code that brought it in, all the way to the sale." },
+      { title: "One clear dashboard", body: "Enquiries, conversion rates and revenue by campaign and referrer, in one place." },
+      { title: "Accurate referral payouts", body: "Commissions are calculated from verified sales, so referrers are paid correctly and on time." },
+      { title: "AI where it helps", body: "Summaries and alerts point out which campaigns are performing and where deals stall." },
     ],
     suits: [
-      "Businesses handling a high volume of enquiries or documents",
-      "Teams working across several disconnected tools",
-      "Managers who need a reliable overview without manual reporting",
+      "Businesses spending on ads without knowing what they return",
+      "Companies running referral or affiliate programmes",
+      "Agencies that need to prove results to their clients",
     ],
     example:
-      "An administrative dashboard that consolidates affiliate activity, customer orders and commission status, with AI-assisted insights where useful.",
-    projectSlug: "victor-holdings-campaign-platform",
+      "A brick supplier seeing which Meta ads and which referrers produced paying customers, and how much each campaign returned.",
+    projectSlug: "referral-to-revenue",
   },
 ];
 
 // How I Work: descriptive titles only — the steps should read at a glance.
+// The customer journey every engagement follows, from first impression to proven result.
+export const journey = [
+  { stage: "Get chosen", body: "Positioning and content that make you the business people notice, remember and trust." },
+  { stage: "Capture", body: "Landing pages, forms and WhatsApp flows that catch every enquiry and record where it came from." },
+  { stage: "Convert", body: "A CRM pipeline with automatic follow-ups, so no enquiry is forgotten before it becomes a sale." },
+  { stage: "Measure", body: "Dashboards that show which ads, referrals and campaigns actually make you money." },
+];
+
+// Packages: no prices shown on the site for now. `slug` is also an option on the Start a Project form.
+export type ServicePackage = { slug: string; title: string; tagline: string; includes: string[]; highlight?: boolean };
+
+export const packages: ServicePackage[] = [
+  {
+    slug: "customer-leak-audit",
+    title: "Customer Leak Audit",
+    tagline: "Find out where you're losing customers.",
+    includes: [
+      "Review of your website, ads, WhatsApp and follow-up process",
+      "A test enquiry to see how quickly and how well you respond",
+      "A short report and video walkthrough of the top leaks and how to fix them",
+    ],
+  },
+  {
+    slug: "customer-acquisition-systems",
+    title: "Lead Capture System",
+    tagline: "Never miss an enquiry again.",
+    includes: [
+      "Landing page or enquiry form built around your offer",
+      "Click-to-WhatsApp ads and forms tagged by campaign",
+      "Every enquiry saved automatically, with an instant reply",
+    ],
+  },
+  {
+    slug: "sales-workflow-automation",
+    title: "CRM & Follow-Up Automation",
+    tagline: "Turn enquiries into paying customers.",
+    includes: [
+      "CRM pipeline set up around how you actually sell",
+      "Lead assignment, follow-up reminders and quote chasing",
+      "WhatsApp and email follow-ups when a lead goes quiet",
+    ],
+  },
+  {
+    slug: "revenue-tracking",
+    title: "Revenue Tracking Dashboard",
+    tagline: "Know which marketing makes you money.",
+    includes: [
+      "Enquiries and sales traced back to each ad and referrer",
+      "Cost per lead, conversion rate and revenue by campaign",
+      "Referral and commission reporting",
+    ],
+  },
+  {
+    slug: "complete-customer-engine",
+    title: "Complete Customer Engine",
+    tagline: "The whole journey, from first impression to proven result.",
+    includes: [
+      "Positioning session so your message matches your system",
+      "Lead capture, CRM and follow-up automation",
+      "Revenue tracking dashboard",
+    ],
+    highlight: true,
+  },
+  {
+    slug: "growth-partner-retainer",
+    title: "Growth Partner Retainer",
+    tagline: "Keep it running and keep improving it.",
+    includes: [
+      "Monitoring, fixes and a monthly results report",
+      "One new automation or improvement each month",
+      "A monthly strategy call",
+    ],
+  },
+];
+
+// Tools I set up and connect for clients.
+export const tools = ["Zoho CRM", "ClickUp", "n8n", "WhatsApp Business", "Meta Ads", "Google Workspace"];
+
 export const workSteps = [
   "Understand the problem and where opportunities are lost",
   "Decide what to build, integrate or automate",
@@ -134,10 +212,15 @@ export const engagements = [
 
 export const techStack = [
   { area: "Software engineering", items: ["Python", "FastAPI", "JavaScript / TypeScript", "React / Next.js"] },
+  { area: "CRM & automation", items: ["Zoho CRM", "ClickUp", "n8n", "WhatsApp Business"] },
   { area: "Data & integrations", items: ["SQL / MySQL", "REST APIs", "Google Workspace APIs", "Connected business systems"] },
   { area: "AI engineering", items: ["AI API integration", "Locally hosted language models"] },
   { area: "Delivery", items: ["Docker", "Vercel", "Deployment & maintenance"] },
 ];
+
+export function packageBySlug(slug: string) {
+  return packages.find((item) => item.slug === slug);
+}
 
 export function solutionBySlug(slug: string) {
   return solutions.find((solution) => solution.slug === slug);

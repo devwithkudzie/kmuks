@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 import { after, NextResponse } from "next/server";
 import { BUDGETS, TIMELINES } from "@/lib/enquiry";
-import { solutions } from "@/lib/content";
+import { packages } from "@/lib/content";
 import { appendRowByHeader } from "@/lib/google/sheets";
 import { checkRateLimit, clientIpFrom } from "@/lib/rate-limit";
 import { notifyNewLead } from "@/lib/whatsapp/notify";
@@ -36,7 +36,7 @@ const enquirySchema = z.object({
   email: text(200).email("Enter a valid work email."),
   phone: text(30).regex(/^$|^\+?[\d\s()-]{7,20}$/, "Enter a valid phone number, e.g. +263 77 000 0000.").default(""),
   company: text(160).min(1, "Enter your company or business name."),
-  solution: z.enum(["", "not-sure", ...solutions.map((solution) => solution.slug)]).default(""),
+  solution: z.enum(["", "not-sure", ...packages.map((item) => item.slug)]).default(""),
   goal: text(2000).min(1, "Tell me what you're trying to achieve."),
   problem: text(2000).min(1, "Describe the main problem."),
   tools: text(1000).default(""),
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
   if (enquiry.website) return NextResponse.json({ submissionId });
 
     const solutionTitle =
-    solutions.find((solution) => solution.slug === enquiry.solution)?.title ?? (enquiry.solution ? "Not sure yet" : "");
+    packages.find((item) => item.slug === enquiry.solution)?.title ?? (enquiry.solution ? "Not sure yet" : "");
   const values: Record<string, string> = {
     "Submission ID": submissionId,
     "Submitted At": new Date().toISOString(),

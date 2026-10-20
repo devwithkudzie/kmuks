@@ -17,8 +17,8 @@ export type Testimonial = {
 
 export const testimonials: Testimonial[] = [
   {
-    company: "Victor Holdings",
-    // TODO: paste the quote Victor Holdings approved, then set published: true.
+    company: "Victors Holdings",
+    // TODO: paste the quote Victors Holdings approved, then set published: true.
     quote: "",
     name: "",
     role: "",

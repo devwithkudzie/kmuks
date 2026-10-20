@@ -29,7 +29,7 @@ export default function OpenGraphImage() {
         <img src={logo} alt="kudziemuks" width={306} height={44} />
         <div style={{ display: "flex", flexDirection: "column", maxWidth: 980 }}>
           <div style={{ fontSize: 58, lineHeight: 1.1, fontWeight: 800 }}>
-            I engineer systems that help businesses win customers.
+            I help businesses win more customers.
           </div>
           <div
             style={{
@@ -40,11 +40,11 @@ export default function OpenGraphImage() {
               fontWeight: 600,
             }}
           >
-            Customer acquisition · Lead generation · AI integration · Automation
+            Positioning that gets you chosen, systems that close the sale.
           </div>
         </div>
         <div style={{ display: "flex", fontSize: 20, color: "#A1A1AA" }}>
-          AI-powered software engineering
+          Lead capture · CRM · Follow-up automation · Revenue tracking
         </div>
       </div>
     ),

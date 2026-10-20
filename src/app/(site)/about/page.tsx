@@ -10,7 +10,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: { absolute: "About Kudziemuks | Software & AI Engineer" },
   description:
-    "Kudzaishe Prosper Mukungurutse — a software engineer building AI-powered systems that help businesses capture leads and win customers.",
+    "Kudzaishe Prosper Mukungurutse — a software engineer helping businesses win more customers with positioning, lead capture, CRM and follow-up systems.",
   alternates: { canonical: "/about" },
 };
 

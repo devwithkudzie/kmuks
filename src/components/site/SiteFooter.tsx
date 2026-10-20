@@ -13,7 +13,7 @@ export function SiteFooter() {
         <div>
           <Logo className="h-6" tone="dark" />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-mist">
-            AI-powered software engineering for customer acquisition and lead generation.
+            Helping businesses win more customers, from first impression to closed sale.
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-3">
             {[
               { href: site.linkedinUrl, label: "LinkedIn" },
-              { href: site.calendlyUrl, label: "Book a call" },
+              { href: site.bookingUrl, label: "Book a call" },
               { href: site.facebookUrl, label: "Facebook" },
               { href: site.instagramUrl, label: "Instagram" },
               { href: site.xUrl, label: "X" },
