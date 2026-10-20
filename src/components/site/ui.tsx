@@ -128,13 +128,15 @@ export function Tags({ items }: { items: string[] }) {
 
 /** Closing call to action used at the bottom of pages. */
 export function CallToAction({
-  title = "Have a customer acquisition problem worth solving?",
-  body = "Tell me where your current process breaks down, what you want to improve and what the business needs to achieve. I'll help you work out whether custom software, AI integration or automation is the right approach.",
-  href = "/start-a-project",
+  title = "Where are you losing customers?",
+  body = "Get a free Customer Leak Audit. I'll check how your business handles enquiries, what happens after a quote, and where customers slip away, then show you what to fix first.",
+  href = "/start-a-project?solution=customer-leak-audit",
+  label = "Get a Free Customer Leak Audit",
 }: {
   title?: string;
   body?: string;
   href?: string;
+  label?: string;
 }) {
   return (
     <section className="border-t border-line bg-[radial-gradient(ellipse_at_bottom,rgb(109_40_217/0.12),transparent_65%)]">
@@ -142,7 +144,7 @@ export function CallToAction({
         <h2 className="text-[clamp(1.85rem,4.4vw,3rem)] leading-[1.1] font-bold tracking-tight text-balance text-fog">{title}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-pretty text-mist sm:text-lg">{body}</p>
         <div className="mt-9 flex justify-center">
-          <PrimaryButton href={href}>Discuss a Project</PrimaryButton>
+          <PrimaryButton href={href}>{label}</PrimaryButton>
         </div>
         <p className="mt-4 text-xs text-mist">No assumptions about the solution before understanding the problem.</p>
       </div>

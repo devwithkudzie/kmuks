@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Bot, BriefcaseBusiness, Magnet, Workflow, type LucideIcon } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, ChartColumn, Magnet, Workflow, type LucideIcon } from "lucide-react";
 import type { Solution } from "@/lib/content";
 import type { CaseStudy } from "@/content/case-studies";
 import { focus } from "@/components/site/ui";
@@ -8,7 +8,7 @@ import { focus } from "@/components/site/ui";
 const solutionIcons: Record<string, LucideIcon> = {
   "customer-acquisition-systems": Magnet,
   "sales-workflow-automation": Workflow,
-  "ai-business-applications": Bot,
+  "revenue-tracking": ChartColumn,
 };
 
 export function SolutionIcon({ slug, className = "size-5" }: { slug: string; className?: string }) {

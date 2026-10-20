@@ -4,29 +4,29 @@ import { CallToAction, PageIntro, Section, SectionHeading } from "@/components/s
 import { solutions } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Customer Acquisition & AI Software Solutions",
+  title: "Lead Capture, CRM & Revenue Tracking Solutions",
   description:
-    "Customer acquisition systems, sales and workflow automation, and AI-powered business applications — engineered around how your business wins customers.",
+    "Lead capture systems, CRM and follow-up automation, and revenue tracking — set up around how your business wins customers.",
   alternates: { canonical: "/solutions" },
 };
 
 const fit = [
-  { title: "Customer Acquisition Systems", role: "Attract and track opportunities" },
-  { title: "Sales & Workflow Automation", role: "Manage leads, orders and follow-ups" },
-  { title: "AI-Powered Business Applications", role: "Improve information handling and visibility" },
+  { title: "Lead Capture Systems", role: "Catch every enquiry and record where it came from" },
+  { title: "CRM & Follow-Up Automation", role: "Follow up on every lead until it becomes a sale" },
+  { title: "Revenue Tracking", role: "See which marketing makes you money" },
 ];
 
 export default function SolutionsPage() {
   return (
     <>
-      <PageIntro eyebrow="Solutions" title="AI & software solutions for customer acquisition.">
+      <PageIntro eyebrow="Solutions" title="Systems that help you win more customers.">
         <p>
-          I design and engineer software systems that help businesses capture leads, organise prospects and improve the
-          processes that turn enquiries into customers.
+          I set up and connect the systems that capture every enquiry, follow up on every lead and show which marketing
+          makes you money.
         </p>
         <p>
-          My work combines custom software development, practical AI integration and business process automation. The
-          solution starts with the problem — not the technology.
+          I work with tools like Zoho CRM, ClickUp, n8n and WhatsApp Business, and build custom software and AI only
+          where the tools fall short. The solution starts with the problem, not the technology.
         </p>
       </PageIntro>
 

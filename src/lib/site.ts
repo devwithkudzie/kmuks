@@ -26,6 +26,13 @@ function resolveSiteUrl() {
   return PRODUCTION_SITE_URL;
 }
 
+function bookingUrl() {
+  const calendly = process.env.NEXT_PUBLIC_CALENDLY_URL?.trim();
+  if (calendly) return calendly;
+  const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.trim() || "263779297141").replace(/\D/g, "");
+  return `https://wa.me/${number}?text=${encodeURIComponent("Hi Kudzie, I'd like to book a call.")}`;
+}
+
 export const site = {
   name: "kudziemuks",
   handle: "kudziemuks",
@@ -40,22 +47,21 @@ export const site = {
     "Kudziemuks",
     "Kudzie Muks",
   ],
-  title: "Kudziemuks | AI-Powered Software Engineering",
+  title: "Kudziemuks | Helping Businesses Win More Customers",
+  tagline: "Positioning that gets you chosen, systems that close the sale.",
   description:
-    "I build AI-powered software and customer acquisition systems to help businesses capture leads, manage prospects and improve conversion processes.",
+    "I help businesses win more customers: positioning that gets you chosen, and lead capture, CRM and follow-up systems that turn enquiries into sales.",
   linkedinUrl: "https://www.linkedin.com/in/kmuks",
   facebookUrl: "https://www.facebook.com/prospermuks",
   instagramUrl: "https://www.instagram.com/prospermuks/",
   xUrl: "https://x.com/prospermuks",
   linkedinPartnerId: process.env.NEXT_PUBLIC_LINKEDIN_PARTNER_ID ?? "",
-  calendlyUrl:
-    process.env.NEXT_PUBLIC_CALENDLY_URL ??
-    "https://calendly.com/kudziemuks/strategy-call",
-  whatsappNumber: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "263779297141").replace(
-    /\D/g,
-    "",
-  ),
+  // An empty env var must not win (that left "Book a call" linking nowhere), so `||`, not `??`.
+  calendlyUrl: process.env.NEXT_PUBLIC_CALENDLY_URL?.trim() || "",
+  whatsappNumber: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.trim() || "263779297141").replace(/\D/g, ""),
   siteUrl: resolveSiteUrl(),
+  /** "Book a call": Calendly when configured, otherwise a WhatsApp chat. */
+  bookingUrl: bookingUrl(),
   /** Shown in copy ("Visit kudziemuks.co.zw"); fixed so local previews don't say "localhost". */
   domain: new URL(PRODUCTION_SITE_URL).hostname.replace(/^www\./, ""),
 } as const;

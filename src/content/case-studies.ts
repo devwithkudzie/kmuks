@@ -42,11 +42,11 @@ export const caseStudies: CaseStudy[] = [
   // ─── Professional ──────────────────────────────────────────────────────────
   {
     slug: "victor-holdings-campaign-platform",
-    title: "Victor Holdings Campaign Setup Platform",
+    title: "Victors Holdings Campaign Setup Platform",
     tagline: "Guided setup links that collect everything needed to launch a client's marketing campaign.",
     category: "professional",
     type: "Client project",
-    client: "Victor Holdings",
+    client: "Victors Holdings",
     role: "Design, engineering and deployment",
     stage: "In use",
     featured: true,
@@ -55,7 +55,7 @@ export const caseStudies: CaseStudy[] = [
     overview:
       "A web platform that replaces back-and-forth chat with a guided, private setup form. Each client gets a secure link, completes questions tailored to their industry, and every answer arrives as a complete, structured record.",
     problem:
-      "Collecting the details needed to launch Victor Holdings' campaigns — pricing, delivery, payment and customer information — over WhatsApp was slow, incomplete and impossible to keep organised.",
+      "Collecting the details needed to launch Victors Holdings' campaigns — pricing, delivery, payment and customer information — over WhatsApp was slow, incomplete and impossible to keep organised.",
     approach: [
       "Give the client one private link to a step-by-step form that asks exactly what's needed, in the language of their industry, and saves the answers where the team already works: Google Sheets.",
       "Rather than hard-coding one form, I built a template system: each industry template defines its questions, answer types and follow-up questions, so new clients don't need new code.",
@@ -133,14 +133,14 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     results: [
-      "In use for Victor Holdings' campaign setup: the client completes their information in one guided session.",
+      "In use for Victors Holdings' campaign setup: the client completes their information in one guided session.",
       "Every submission arrives complete, validated and in a consistent format, ready to plan the campaign from.",
     ],
     lessons: [
       "Separating the client's identity from the form template made the platform reusable for other industries without code changes.",
     ],
     next: ["Add templates for more industries as new clients come on board."],
-    solutionSlug: "ai-business-applications",
+    solutionSlug: "customer-acquisition-systems",
   },
   {
     slug: "omniforce-talent-marketplace",
@@ -166,7 +166,6 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     // TODO: add engineering details, approved screenshots (evidence), stack and results.
-    solutionSlug: "ai-business-applications",
   },
 
   // ─── Personal ──────────────────────────────────────────────────────────────
@@ -285,7 +284,7 @@ export const caseStudies: CaseStudy[] = [
       },
     ],
     // TODO: add engineering details, stack, screenshots and links.
-    solutionSlug: "sales-workflow-automation",
+    solutionSlug: "revenue-tracking",
   },
   {
     slug: "tredem-headline-optimizer",
@@ -334,7 +333,6 @@ export const caseStudies: CaseStudy[] = [
       },
       // TODO: add the frontend, backend and AI model/services you used.
     ],
-    solutionSlug: "ai-business-applications",
   },
   {
     slug: "soliddesk",
