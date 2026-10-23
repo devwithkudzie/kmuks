@@ -6,22 +6,17 @@ import { CheckCircle2, Lock } from "lucide-react";
 import { SelectField, TextAreaField, TextField } from "@/components/client-setup/fields";
 import { focusRing } from "@/components/client-setup/styles";
 import { markFormSubmitted, redirectIfSubmitted } from "@/components/client-setup/submitted";
-import { BUDGETS, TIMELINES } from "@/lib/enquiry";
 import { site } from "@/lib/site";
 import { trackCta } from "@/lib/track";
 
 type Option = { slug: string; title: string };
+// Kept to the basics so it's quick to send; the rest comes out in the conversation.
 type Values = {
   name: string;
   email: string;
   phone: string;
-  company: string;
   solution: string;
-  goal: string;
   problem: string;
-  tools: string;
-  timeline: string;
-  budget: string;
 };
 
 const SUBMITTED_KEY = "start-a-project";
@@ -32,13 +27,8 @@ export function StartProjectForm({ solutions, initialSolution }: { solutions: Op
     name: "",
     email: "",
     phone: "",
-    company: "",
     solution: initialSolution,
-    goal: "",
     problem: "",
-    tools: "",
-    timeline: "",
-    budget: "",
   });
   const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -129,11 +119,10 @@ export function StartProjectForm({ solutions, initialSolution }: { solutions: Op
         <span className="text-accent">*</span> Required
       </p>
       <fieldset disabled={busy} className="mt-6 space-y-7">
+        {wrap("name", <TextField label="Name" required autoComplete="name" maxLength={120} value={values.name} onChange={(e) => set("name")(e.target.value)} placeholder="e.g. Tendai Moyo" error={errors.name} />)}
         <div className="grid gap-7 sm:grid-cols-2">
-          {wrap("name", <TextField label="Name" required autoComplete="name" maxLength={120} value={values.name} onChange={(e) => set("name")(e.target.value)} placeholder="e.g. Tendai Moyo" error={errors.name} />)}
-          {wrap("email", <TextField label="Work email" required type="email" autoComplete="email" maxLength={200} value={values.email} onChange={(e) => set("email")(e.target.value)} placeholder="you@company.com" error={errors.email} />)}
-          {wrap("company", <TextField label="Company or business" required autoComplete="organization" maxLength={160} value={values.company} onChange={(e) => set("company")(e.target.value)} placeholder="e.g. Fresh Cuts Barbershop" error={errors.company} />)}
-          {wrap("phone", <TextField label="Phone or WhatsApp" optional type="tel" inputMode="tel" autoComplete="tel" maxLength={30} value={values.phone} onChange={(e) => set("phone")(e.target.value)} placeholder="e.g. +263 77 000 0000" error={errors.phone} />)}
+          {wrap("email", <TextField label="Email" required type="email" autoComplete="email" maxLength={200} value={values.email} onChange={(e) => set("email")(e.target.value)} placeholder="you@company.com" error={errors.email} />)}
+          {wrap("phone", <TextField label="WhatsApp" optional type="tel" inputMode="tel" autoComplete="tel" maxLength={30} value={values.phone} onChange={(e) => set("phone")(e.target.value)} placeholder="e.g. +263 77 000 0000" error={errors.phone} />)}
         </div>
         {wrap(
           "solution",
@@ -146,13 +135,7 @@ export function StartProjectForm({ solutions, initialSolution }: { solutions: Op
             onChange={(title) => set("solution")(solutions.find((solution) => solution.title === title)?.slug ?? (title ? "not-sure" : ""))}
           />,
         )}
-        {wrap("goal", <TextAreaField label="What are you trying to achieve?" required maxLength={2000} rows={3} value={values.goal} onChange={(e) => set("goal")(e.target.value)} placeholder="e.g. Track which marketers bring in our customers and pay commission accurately." error={errors.goal} />)}
-        {wrap("problem", <TextAreaField label="What is the main problem?" required maxLength={2000} rows={3} value={values.problem} onChange={(e) => set("problem")(e.target.value)} placeholder="e.g. Enquiries come in on WhatsApp and we lose track of who followed up." error={errors.problem} />)}
-        {wrap("tools", <TextAreaField label="What systems or tools do you currently use?" optional maxLength={1000} rows={2} value={values.tools} onChange={(e) => set("tools")(e.target.value)} placeholder="e.g. WhatsApp Business, Google Sheets, Facebook ads" error={errors.tools} />)}
-        <div className="grid gap-7 sm:grid-cols-2">
-          {wrap("timeline", <SelectField label="Expected timeline" optional value={values.timeline} options={TIMELINES} placeholder="Choose…" onChange={set("timeline")} />)}
-          {wrap("budget", <SelectField label="Indicative budget" optional value={values.budget} options={BUDGETS} placeholder="Choose…" onChange={set("budget")} />)}
-        </div>
+        {wrap("problem", <TextAreaField label="What do you need help with?" required maxLength={2000} rows={4} value={values.problem} onChange={(e) => set("problem")(e.target.value)} placeholder="A sentence or two is enough, e.g. Enquiries come in on WhatsApp and we lose track of who followed up." error={errors.problem} />)}
 
         {/* Honeypot: invisible to people, tempting to bots. */}
         <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
