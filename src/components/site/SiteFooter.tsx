@@ -33,7 +33,7 @@ export function SiteFooter() {
         <div>
           <p className="text-xs font-medium tracking-[0.18em] text-fog uppercase">Explore</p>
           <ul className="mt-4 space-y-3">
-            {[...NAV_LINKS.filter((link) => link.href !== "/solutions"), { href: "/about#how-i-work", label: "How I Work" }, { href: "/start-a-project", label: "Start a Project" }].map((link) => (
+            {[...NAV_LINKS.filter((link) => link.href !== "/solutions" && link.href !== "/"), { href: "/about#how-i-work", label: "How I Work" }, { href: "/start-a-project", label: "Start a Project" }].map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className={linkClass}>
                   {link.label}
