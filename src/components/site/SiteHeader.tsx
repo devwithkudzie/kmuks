@@ -8,7 +8,9 @@ import { Logo } from "@/components/Logo";
 import { focus } from "@/components/site/ui";
 import { NAV_LINKS } from "@/components/site/nav";
 
-const isActive = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
+// Home is only active on "/" itself, not on every page under it.
+const isActive = (pathname: string, href: string) =>
+  href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -123,8 +125,8 @@ export function SiteHeader() {
           </div>
           <nav aria-label="Primary" className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 pt-8 pb-8">
             <ul>
-              {[{ href: "/", label: "Home" }, ...NAV_LINKS].map((link, index) => {
-                const active = link.href === "/" ? pathname === "/" : isActive(pathname, link.href);
+              {NAV_LINKS.map((link, index) => {
+                const active = isActive(pathname, link.href);
                 return (
                   <li key={link.href}>
                     <Link

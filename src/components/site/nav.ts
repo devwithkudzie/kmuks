@@ -1,5 +1,6 @@
 // Main menu, shared by the header (client) and footer (server).
 export const NAV_LINKS = [
+  { href: "/", label: "Home" },
   { href: "/solutions", label: "Solutions" },
   { href: "/case-studies", label: "Case Studies" },
   { href: "/insights", label: "Insights" },
