@@ -26,7 +26,7 @@ const groups = [
 export default function CaseStudiesPage() {
   return (
     <>
-      <section className="border-b border-line bg-[linear-gradient(180deg,#f7f5fd_0%,#ffffff_75%)]">
+      <section className="field-grid border-b border-line">
         <div className="mx-auto max-w-6xl px-5 pt-10 pb-8 sm:px-8 sm:pt-24 sm:pb-16">
           <Eyebrow>Case studies</Eyebrow>
           <h1 className="mt-4 text-[clamp(2rem,6vw,4rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance text-fog">

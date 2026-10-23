@@ -19,7 +19,7 @@ const stackIcons = [Code, Database, Bot, Server];
 export default function AboutPage() {
   return (
     <>
-      <section className="border-b border-line bg-[linear-gradient(180deg,#f7f5fd_0%,#ffffff_75%)]">
+      <section className="field-grid border-b border-line">
         <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-16 pb-16 sm:px-8 sm:pt-24 lg:grid-cols-[1fr_0.8fr] lg:gap-16 lg:pb-24">
           <div>
             <Eyebrow>About</Eyebrow>

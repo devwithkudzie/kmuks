@@ -97,7 +97,7 @@ const journeyIcons = [Target, Magnet, MessageCircle, ChartColumn];
 /** Get chosen → Capture → Convert → Measure: the path every engagement follows. */
 export function CustomerJourney() {
   return (
-    <Section tone="night" id="how-i-help">
+    <Section tone="grid" id="how-i-help">
       <SectionHeading
         eyebrow="How I help"
         title="From first impression to closed sale."
@@ -112,7 +112,7 @@ export function CustomerJourney() {
                 <span className="flex size-12 items-center justify-center rounded-full bg-purple/10">
                   <Icon aria-hidden className="size-6 text-accent" />
                 </span>
-                <span className="text-2xl font-semibold tracking-tight text-fog/20">0{index + 1}</span>
+                <span className="font-mono text-sm tracking-[0.14em] text-mist">0{index + 1}</span>
               </div>
               <h3 className="mt-5 text-lg font-semibold tracking-tight text-fog">{stage}</h3>
               <p className="mt-2 text-sm leading-relaxed text-mist">{body}</p>
@@ -138,12 +138,12 @@ export function Packages() {
           <Link
             key={item.slug}
             href={`/start-a-project?solution=${item.slug}`}
-            className={`group flex flex-col rounded-2xl border p-6 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-purple/10 sm:p-7 ${
+            className={`paper-fold group flex flex-col rounded-2xl border p-6 transition hover:-translate-y-0.5 sm:p-7 ${
               item.highlight ? "border-purple bg-purple/5" : "border-line bg-panel hover:border-purple/50"
             } ${focus}`}
           >
             {item.slug === "customer-leak-audit" ? (
-              <span className="mb-4 self-start rounded-full bg-purple px-3 py-1 text-xs font-medium text-white">Start here · Free</span>
+              <span className="mb-4 self-start rounded-full bg-[rgb(217_249_157)] px-3 py-1 text-xs font-semibold text-fog">Start here · Free</span>
             ) : item.highlight ? (
               <span className="mb-4 self-start rounded-full border border-purple px-3 py-1 text-xs font-medium text-accent">Most complete</span>
             ) : null}
