@@ -63,10 +63,14 @@ export function SiteHeader() {
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={`rounded-md px-3 py-2 text-[0.95rem] font-medium transition ${active ? "text-fog" : "text-mist hover:text-fog"} ${focus}`}
+                  className={`group rounded-md px-3 py-2 text-[0.95rem] font-medium transition ${active ? "text-fog" : "text-mist hover:text-fog"} ${focus}`}
                 >
                   {link.label}
-                  <span aria-hidden className={`mt-1 block h-0.5 rounded-full bg-fog transition-transform ${active ? "scale-x-100" : "scale-x-0"}`} />
+                  {/* Underline: always on the current page; draws in from the left on hover or keyboard focus elsewhere. */}
+                  <span
+                    aria-hidden
+                    className={`mt-1 block h-0.5 origin-left rounded-full bg-fog transition-transform duration-300 ease-out ${active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100"}`}
+                  />
                 </Link>
               );
             })}
