@@ -35,10 +35,11 @@ const enquirySchema = z.object({
   name: text(120).min(1, "Enter your name."),
   email: text(200).email("Enter a valid work email."),
   phone: text(30).regex(/^$|^\+?[\d\s()-]{7,20}$/, "Enter a valid phone number, e.g. +263 77 000 0000.").default(""),
-  company: text(160).min(1, "Enter your company or business name."),
+  // Optional since the form was cut to the basics; older clients may still send them.
+  company: text(160).default(""),
   solution: z.enum(["", "not-sure", ...packages.map((item) => item.slug)]).default(""),
-  goal: text(2000).min(1, "Tell me what you're trying to achieve."),
-  problem: text(2000).min(1, "Describe the main problem."),
+  goal: text(2000).default(""),
+  problem: text(2000).min(1, "Tell me a little about what you need."),
   tools: text(1000).default(""),
   timeline: z.enum(["", ...TIMELINES]).default(""),
   budget: z.enum(["", ...BUDGETS]).default(""),
@@ -98,7 +99,8 @@ export async function POST(request: Request) {
     try {
       await notifyNewLead({
         name: enquiry.name,
-        businessName: enquiry.company,
+        // WhatsApp templates reject empty values.
+        businessName: enquiry.company || "Not given",
         contact: [enquiry.email, enquiry.phone].filter(Boolean).join(" · "),
         description: [solutionTitle, enquiry.problem].filter(Boolean).join(" — "),
         source: "start-a-project",

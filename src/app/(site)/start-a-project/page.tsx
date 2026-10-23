@@ -38,6 +38,7 @@ export default async function StartAProjectPage({ searchParams }: { searchParams
               I&rsquo;ll review what you share, check how your business handles enquiries, and come back with what to fix
               first and the next step.
             </p>
+            <p className="text-sm text-mist">It takes under a minute. We&rsquo;ll cover the details when we talk.</p>
           </div>
           <div className="mt-10 border-t border-line pt-8">
             <p className="text-xs font-medium tracking-[0.2em] text-accent uppercase">What happens next</p>
