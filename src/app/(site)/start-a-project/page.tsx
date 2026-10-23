@@ -22,7 +22,7 @@ export default async function StartAProjectPage({ searchParams }: { searchParams
   const isAudit = initialSolution === "customer-leak-audit";
 
   return (
-    <section className="bg-[linear-gradient(180deg,#f7f5fd_0%,#ffffff_75%)]">
+    <section className="field-grid">
       <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-16 pb-20 sm:px-8 sm:pt-24 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:pb-28">
         <div>
           <Eyebrow>{isAudit ? "Free Customer Leak Audit" : "Start a project"}</Eyebrow>

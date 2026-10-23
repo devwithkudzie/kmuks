@@ -52,12 +52,12 @@ export function SolutionCard({ solution }: { solution: Solution }) {
  */
 export function CaseStudyCard({ study, edge = false }: { study: CaseStudy; edge?: boolean }) {
   const shape = edge
-    ? "border-y border-line sm:rounded-2xl sm:border sm:shadow-sm"
-    : "rounded-2xl border border-line shadow-sm";
+    ? "border-y border-line sm:rounded-2xl sm:border"
+    : "rounded-2xl border border-line";
   return (
     <Link
       href={`/case-studies/${study.slug}`}
-      className={`group flex h-full flex-col overflow-hidden bg-panel transition hover:border-purple/50 sm:hover:-translate-y-0.5 sm:hover:shadow-lg sm:hover:shadow-purple/10 ${shape} ${focus}`}
+      className={`paper-fold group flex h-full flex-col overflow-hidden bg-panel transition hover:border-purple/50 sm:hover:-translate-y-0.5 ${shape} ${focus}`}
     >
       <div
         className={`relative aspect-[16/9] overflow-hidden border-b border-line bg-night ${edge && !study.image ? "hidden sm:block" : ""}`}
@@ -71,7 +71,7 @@ export function CaseStudyCard({ study, edge = false }: { study: CaseStudy; edge?
             className="object-cover object-top transition duration-500 group-hover:scale-[1.02]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_top_right,rgb(109_40_217/0.18),transparent_65%)]">
+          <div className="field-grid flex h-full items-center justify-center">
             <BriefcaseBusiness aria-hidden className="size-10 text-accent" />
           </div>
         )}

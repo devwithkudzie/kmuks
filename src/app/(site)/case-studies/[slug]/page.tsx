@@ -141,8 +141,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   return (
     <>
       {/* 1 · Hero: the project's name and its product, nothing else. */}
-      <section className="relative overflow-hidden border-b border-line bg-[linear-gradient(180deg,#efeafc_0%,#f7f5fd_55%,#ffffff_100%)]">
-        <div aria-hidden className="pointer-events-none absolute -top-40 -left-20 size-[42rem] rounded-full bg-purple/15 blur-3xl" />
+      <section className="field-grid overflow-hidden border-b border-line">
         <div className="relative mx-auto max-w-6xl px-5 pt-8 pb-12 sm:px-8 sm:pt-12 sm:pb-16">
           <Link href="/case-studies" className={`text-sm font-medium text-accent transition hover:text-fog ${focus}`}>
             ← All case studies

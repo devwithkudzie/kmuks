@@ -11,7 +11,7 @@ const engagementIcons = [ClipboardList, Hammer, RefreshCw];
  * "How I Work": the four steps, used on the homepage and the About page.
  * `full` adds the ways to work together (About page); otherwise it links there.
  */
-export function HowIWork({ full = false, tone = "night" }: { full?: boolean; tone?: "canvas" | "night" }) {
+export function HowIWork({ full = false, tone = "night" }: { full?: boolean; tone?: "canvas" | "night" | "grid" }) {
   return (
     <Section tone={tone} id="how-i-work">
       <SectionHeading

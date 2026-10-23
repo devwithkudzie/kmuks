@@ -49,7 +49,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-[60] border-b border-line bg-canvas/90 backdrop-blur" inert={open || undefined}>
+      <header className="sticky top-0 z-[60] border-b border-line bg-white/70 backdrop-blur-md" inert={open || undefined}>
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-6 px-5 sm:px-8">
           <Link href="/" aria-label="kudziemuks — home" className={`inline-flex shrink-0 ${focus}`}>
             <Logo className="h-5 sm:h-6" preload tone="dark" />
@@ -63,10 +63,10 @@ export function SiteHeader() {
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={`rounded-md px-3 py-2 text-sm transition ${active ? "text-fog" : "text-mist hover:text-fog"} ${focus}`}
+                  className={`rounded-md px-3 py-2 text-[0.95rem] font-medium transition ${active ? "text-fog" : "text-mist hover:text-fog"} ${focus}`}
                 >
                   {link.label}
-                  <span aria-hidden className={`mt-0.5 block h-px bg-purple transition-transform ${active ? "scale-x-100" : "scale-x-0"}`} />
+                  <span aria-hidden className={`mt-1 block h-0.5 rounded-full bg-fog transition-transform ${active ? "scale-x-100" : "scale-x-0"}`} />
                 </Link>
               );
             })}
@@ -75,7 +75,7 @@ export function SiteHeader() {
           <div className="flex items-center gap-3">
             <Link
               href="/start-a-project"
-              className={`hidden min-h-10 items-center gap-1.5 rounded-lg bg-purple px-4 text-sm font-medium text-white transition hover:bg-violet md:inline-flex ${focus}`}
+              className={`hidden min-h-10 items-center gap-1.5 rounded-full bg-fog px-5 text-sm font-semibold text-white transition hover:bg-purple md:inline-flex ${focus}`}
             >
               Start a Project
               <ArrowUpRight aria-hidden className="size-4" />
@@ -100,7 +100,7 @@ export function SiteHeader() {
 
       {open ? (
         <div id={menuId} role="dialog" aria-modal="true" aria-label="Menu" className="fixed inset-0 z-[70] flex flex-col bg-canvas md:hidden">
-          <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(109_40_217/0.1),transparent_52%)]" />
+          <div aria-hidden className="field-grid pointer-events-none absolute inset-0" />
           <div className="relative flex h-16 items-center justify-between border-b border-line px-5">
             <Link href="/" className={`inline-flex ${focus}`} onClick={() => setOpen(false)}>
               <Logo className="h-5" tone="dark" />
@@ -145,7 +145,7 @@ export function SiteHeader() {
               <Link
                 href="/start-a-project"
                 onClick={() => setOpen(false)}
-                className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-purple px-6 text-sm font-medium text-white transition hover:bg-violet ${focus}`}
+                className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-fog px-6 text-sm font-semibold text-white transition hover:bg-purple ${focus}`}
               >
                 Start a Project
                 <ArrowUpRight aria-hidden className="size-4" />

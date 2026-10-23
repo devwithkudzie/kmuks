@@ -33,21 +33,27 @@ const flow = ["Enquiry captured", "AI qualifies the lead", "Follow-up sent"];
 function HeroVisual() {
   return (
     <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-      {/* Purple arcs behind the photo, echoing a growth curve. */}
-      <div aria-hidden className="absolute -top-8 -right-8 size-[85%] rounded-full border-[14px] border-purple/15" />
-      <div aria-hidden className="absolute -bottom-10 -left-6 size-40 rounded-full border-[10px] border-purple/25" />
-      <div className="relative aspect-[4/3.4] overflow-hidden rounded-[2rem] shadow-2xl shadow-purple/20">
-        <Image
-          src={heroPhoto}
-          alt="Two colleagues reviewing work together at a computer"
-          fill
-          preload
-          placeholder="blur"
-          sizes="(max-width: 1024px) 100vw, 45vw"
-          className="object-cover object-[60%_center]"
-        />
+      {/* The photo is pinned like a sheet of paper on the grid, top corner folded. */}
+      <div className="drop-shadow-2xl">
+        <figure className="paper-fold rounded-2xl border border-line bg-white p-3 sm:p-4">
+          <div className="relative aspect-[4/3.2] overflow-hidden rounded-xl">
+            <Image
+              src={heroPhoto}
+              alt="Two colleagues reviewing work together at a computer"
+              fill
+              preload
+              placeholder="blur"
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              className="object-cover object-[60%_center]"
+            />
+          </div>
+          {/* Right-aligned: the floating card below overlaps the caption's left side. */}
+          <figcaption className="px-1 pt-3 text-right font-mono text-[0.68rem] tracking-[0.14em] text-mist uppercase">
+            Fig. 01 · kudziemuks
+          </figcaption>
+        </figure>
       </div>
-      <div className="absolute -bottom-8 left-4 w-64 rounded-2xl border border-line bg-canvas p-4 shadow-xl shadow-purple/15 sm:left-8">
+      <div className="absolute -bottom-10 -left-2 w-64 -rotate-2 rounded-2xl border border-line bg-white/95 p-4 shadow-xl shadow-purple/15 backdrop-blur sm:-left-6">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-fog">From enquiry to customer</p>
           <span className="inline-flex items-center gap-1 text-[0.7rem] text-emerald-700">
@@ -70,17 +76,21 @@ function HeroVisual() {
 export default function Home() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-line bg-[linear-gradient(180deg,#f7f5fd_0%,#ffffff_70%)]">
+      <section className="field-grid overflow-hidden border-b border-line">
         <div className="relative mx-auto grid max-w-6xl gap-16 px-5 pt-14 pb-20 sm:px-8 sm:pt-20 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-14 lg:pb-24">
           <div>
             <div className="animate-fade-up">
               <Eyebrow>Positioning · CRM · Automation</Eyebrow>
             </div>
             <h1
-              className="animate-fade-up mt-6 text-[clamp(2.4rem,6.2vw,4.1rem)] leading-[1.04] font-bold tracking-[-0.035em] text-balance text-fog"
+              className="animate-fade-up mt-6 text-[clamp(2.6rem,6.2vw,4.2rem)] leading-[1] font-bold tracking-[-0.05em] text-balance text-fog"
               style={{ animationDelay: "0.1s" }}
             >
-              I help businesses <span className="text-accent">win more customers.</span>
+              I help businesses{" "}
+              {/* A lime highlighter stroke under the promise. */}
+              <span className="-mx-1 box-decoration-clone bg-[linear-gradient(transparent_62%,rgb(217_249_157)_62%,rgb(217_249_157)_90%,transparent_90%)] px-1 text-accent">
+                win more customers.
+              </span>
             </h1>
             <p
               className="animate-fade-up mt-6 max-w-xl text-base leading-relaxed text-pretty text-mist sm:text-lg"

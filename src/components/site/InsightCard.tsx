@@ -8,14 +8,14 @@ export function InsightCard({ insight }: { insight: Insight }) {
   return (
     <Link
       href={`/insights/${insight.slug}`}
-      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-panel transition hover:border-purple/60 ${focus}`}
+      className={`paper-fold group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-panel transition hover:border-purple/60 ${focus}`}
     >
       <div className="relative aspect-[16/8] overflow-hidden bg-night">
         {insight.cover ? (
           <Image src={insight.cover} alt="" fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition duration-500 group-hover:scale-[1.02]" />
         ) : (
           // No cover image: a simple branded panel instead of a stock photo.
-          <div className="flex h-full items-center justify-center bg-[radial-gradient(ellipse_at_top_right,rgb(109_40_217/0.18),transparent_65%)]">
+          <div className="field-grid flex h-full items-center justify-center">
             <BookOpen aria-hidden className="size-10 text-accent" />
           </div>
         )}

@@ -171,3 +171,65 @@ body {
     transform: none;
   }
 }
+
+
+/* In the components layer so utility classes (absolute, bg-…) can still override these. */
+@layer components {
+  /*
+   * "Field notes" look for the public site's hero areas: a fine drafting grid
+   * that fades out downwards, over soft lime and lavender washes.
+   * Put .field-grid on a section; its content sits above the grid.
+   */
+  .field-grid {
+    position: relative;
+    isolation: isolate;
+    background-color: #ffffff;
+    background-image:
+      radial-gradient(55% 75% at 0% 0%, rgb(217 249 157 / 0.42), transparent 72%),
+      radial-gradient(55% 80% at 100% 0%, rgb(196 181 253 / 0.45), transparent 72%),
+      radial-gradient(40% 50% at 85% 100%, rgb(196 181 253 / 0.18), transparent 70%);
+  }
+
+  .field-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgb(23 21 29 / 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(23 21 29 / 0.07) 1px, transparent 1px);
+    background-size: 2.25rem 2.25rem;
+    background-position: -1px -1px;
+    mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  }
+
+  /* A quieter version for closing calls to action: grid fades in from the bottom. */
+  .field-grid-soft::before {
+    mask-image: radial-gradient(ellipse at center, #000 0%, transparent 72%);
+  }
+
+  /*
+   * A sheet of paper with its top-right corner folded over.
+   * The corner is cut away, and a small triangle fills it like the back of the page.
+   */
+  .paper-fold {
+    --fold: 1.75rem;
+    position: relative;
+    clip-path: polygon(0 0, calc(100% - var(--fold)) 0, 100% var(--fold), 100% 100%, 0 100%);
+  }
+
+  .paper-fold::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    width: var(--fold);
+    height: var(--fold);
+    pointer-events: none;
+    background: linear-gradient(to bottom left, transparent 50%, #e9e5f3 50%, #f6f4fb 100%);
+    box-shadow: -2px 2px 4px rgb(23 21 29 / 0.08);
+    border-bottom-left-radius: 0.25rem;
+  }
+}

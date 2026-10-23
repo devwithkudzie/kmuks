@@ -6,21 +6,24 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 export const focus =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple";
 
-const buttonBase = `inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-6 text-sm font-medium transition ${focus}`;
+const buttonBase = `inline-flex min-h-12 items-center justify-center gap-2 rounded-full text-[0.95rem] font-semibold transition ${focus}`;
 
+/** Ink pill that turns purple on hover. */
 export function PrimaryButton({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className={`${buttonBase} bg-purple text-white hover:bg-violet`}>
+    <Link href={href} className={`${buttonBase} bg-fog px-7 text-white shadow-lg shadow-fog/10 hover:bg-purple`}>
       {children}
       <ArrowUpRight aria-hidden className="size-4" />
     </Link>
   );
 }
 
+/** Quiet text link with an arrow, sitting beside a primary button. */
 export function SecondaryButton({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className={`${buttonBase} border border-line text-fog hover:border-fog/40 hover:bg-night`}>
+    <Link href={href} className={`group ${buttonBase} px-2 text-fog hover:text-accent`}>
       {children}
+      <ArrowUpRight aria-hidden className="size-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
     </Link>
   );
 }
@@ -38,7 +41,12 @@ export function TextLink({ href, children }: { href: string; children: ReactNode
 }
 
 export function Eyebrow({ children }: { children: ReactNode }) {
-  return <p className="text-[0.7rem] font-medium tracking-[0.24em] text-accent uppercase">{children}</p>;
+  return (
+    <p className="flex items-center gap-2.5 text-[0.72rem] font-semibold tracking-[0.22em] text-mist uppercase">
+      <span aria-hidden className="size-1.5 shrink-0 bg-purple" />
+      {children}
+    </p>
+  );
 }
 
 /** Section opener: eyebrow, heading and optional intro, with an optional link on the right. */
@@ -59,7 +67,7 @@ export function SectionHeading({
     <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="max-w-3xl">
         <Eyebrow>{eyebrow}</Eyebrow>
-        <Heading className="mt-4 text-[clamp(1.85rem,4.4vw,3rem)] leading-[1.1] font-bold tracking-tight text-balance text-fog">
+        <Heading className="mt-4 text-[clamp(1.85rem,4.4vw,3rem)] leading-[1.08] font-bold tracking-[-0.035em] text-balance text-fog">
           {title}
         </Heading>
         {intro ? <p className="mt-5 text-base leading-relaxed text-pretty text-mist sm:text-lg">{intro}</p> : null}
@@ -82,22 +90,24 @@ export function PageIntro({
   image?: { src: string; alt: string };
 }) {
   return (
-    <section className="border-b border-line bg-[linear-gradient(180deg,#f7f5fd_0%,#ffffff_75%)]">
+    <section className="field-grid border-b border-line">
       <div
         className={`mx-auto grid max-w-6xl gap-12 px-5 pt-16 pb-14 sm:px-8 sm:pt-24 sm:pb-20 ${image ? "lg:grid-cols-[1.1fr_0.9fr] lg:items-center" : ""}`}
       >
         <div>
           <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="mt-5 max-w-4xl text-[clamp(2.2rem,6vw,4rem)] leading-[1.04] font-bold tracking-[-0.03em] text-balance text-fog">
+          <h1 className="mt-5 max-w-4xl text-[clamp(2.2rem,6vw,4rem)] leading-[1.02] font-bold tracking-[-0.045em] text-balance text-fog">
             {title}
           </h1>
           {children ? <div className="mt-7 max-w-2xl space-y-4 text-base leading-relaxed text-mist sm:text-lg">{children}</div> : null}
         </div>
+        {/* The shadow sits on a wrapper: the folded corner's clip would cut it off the card itself. */}
         {image ? (
-          <div className="relative">
-            <div aria-hidden className="absolute -top-5 -right-5 size-2/3 rounded-full border-[10px] border-purple/15" />
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] shadow-xl shadow-purple/15">
-              <Image src={image.src} alt={image.alt} fill preload sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
+          <div className="drop-shadow-xl">
+            <div className="paper-fold rounded-2xl border border-line bg-white p-3">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                <Image src={image.src} alt={image.alt} fill preload sizes="(max-width: 1024px) 100vw, 40vw" className="object-cover" />
+              </div>
             </div>
           </div>
         ) : null}
@@ -106,9 +116,16 @@ export function PageIntro({
   );
 }
 
-export function Section({ children, tone = "canvas", id }: { children: ReactNode; tone?: "canvas" | "night"; id?: string }) {
+const sectionTones = {
+  canvas: "bg-canvas",
+  night: "bg-night",
+  // The drafting grid from the hero, softened, for sections that explain a process.
+  grid: "field-grid field-grid-soft",
+};
+
+export function Section({ children, tone = "canvas", id }: { children: ReactNode; tone?: keyof typeof sectionTones; id?: string }) {
   return (
-    <section id={id} className={`border-t border-line ${tone === "night" ? "bg-night" : "bg-canvas"}`}>
+    <section id={id} className={`border-t border-line ${sectionTones[tone]}`}>
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">{children}</div>
     </section>
   );
@@ -139,9 +156,9 @@ export function CallToAction({
   label?: string;
 }) {
   return (
-    <section className="border-t border-line bg-[radial-gradient(ellipse_at_bottom,rgb(109_40_217/0.12),transparent_65%)]">
+    <section className="field-grid field-grid-soft border-t border-line">
       <div className="mx-auto max-w-4xl px-5 py-20 text-center sm:px-8 sm:py-28">
-        <h2 className="text-[clamp(1.85rem,4.4vw,3rem)] leading-[1.1] font-bold tracking-tight text-balance text-fog">{title}</h2>
+        <h2 className="text-[clamp(1.85rem,4.4vw,3rem)] leading-[1.08] font-bold tracking-[-0.04em] text-balance text-fog">{title}</h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-pretty text-mist sm:text-lg">{body}</p>
         <div className="mt-9 flex justify-center">
           <PrimaryButton href={href}>{label}</PrimaryButton>
