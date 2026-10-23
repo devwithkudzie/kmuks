@@ -101,8 +101,8 @@ export function PageIntro({
           </h1>
           {children ? <div className="mt-7 max-w-2xl space-y-4 text-base leading-relaxed text-mist sm:text-lg">{children}</div> : null}
         </div>
+        {/* The shadow sits on a wrapper: the folded corner's clip would cut it off the card itself. */}
         {image ? (
-          {/* The shadow sits on a wrapper: the folded corner's clip would cut it off the card itself. */}
           <div className="drop-shadow-xl">
             <div className="paper-fold rounded-2xl border border-line bg-white p-3">
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
